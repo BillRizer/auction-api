@@ -1,0 +1,13 @@
+{
+  "name": "auction-api",
+  "version": "1.0.0",
+  "description": "API for auction application",
+  "main": "index.js",
+  "repository": "git@github.com:BillRizer/auction-api.git",
+  "author": "BillRizer <teliz.pablo@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "git-commit-msg-linter": "^4.4.0"
+  }
+}
