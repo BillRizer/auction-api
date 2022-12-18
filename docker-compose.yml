@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      target: $ENV
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${API_PORT}:${API_PORT}
+      - 9229:9229
+    command: yarn start:$ENV
+    env_file:
+      - .env
+      - .env.${ENV}
+    networks:
+      - private-network
+    
+networks:
+  private-network:
+volumes:
+  pgdata:
