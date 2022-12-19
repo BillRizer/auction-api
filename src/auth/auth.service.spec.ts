@@ -53,7 +53,7 @@ describe('AuthService', () => {
     expect(validate).toEqual(epectedDataUser);
   });
 
-  it('should generate jwt token greater then zero', async () => {
+  it('should generate jwt token with size greater then 32', async () => {
     const login = await service.login(mockUser);
 
     expect(login.jwt.length).toBeGreaterThan(32);
