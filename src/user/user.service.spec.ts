@@ -7,6 +7,7 @@ import { mockUser } from '../utils/mock/user';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { NotFoundException } from '@nestjs/common';
 
 const userData = {
   ...mockUser,
@@ -36,6 +37,7 @@ describe('UserService', () => {
             findOne: jest.fn().mockResolvedValue(userEntity),
             findOneOrFail: jest.fn().mockResolvedValue(userEntity),
             merge: jest.fn().mockResolvedValue(updatedUserEntity),
+            softDelete: jest.fn().mockResolvedValue(undefined),
           },
         },
         {
@@ -130,6 +132,34 @@ describe('UserService', () => {
       expect(
         userService.update('fake-uuid', UpdateUserDto),
       ).rejects.toThrowError();
+    });
+  });
+
+  describe('Delete', () => {
+    it('should delete user', async () => {
+      const deleted = await userService.deleteById('fake-uuid');
+
+      expect(deleted).toBeUndefined();
+      expect(userRepository.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(userRepository.softDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an exception when not found', async () => {
+      jest
+        .spyOn(userRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new Error());
+
+      expect(userService.deleteById('fake-uuid')).rejects.toThrowError(
+        NotFoundException,
+      );
+    });
+
+    it('should throw an exception', async () => {
+      jest
+        .spyOn(userRepository, 'softDelete')
+        .mockRejectedValueOnce(new Error());
+
+      expect(userService.deleteById('fake-uuid')).rejects.toThrowError();
     });
   });
 });
