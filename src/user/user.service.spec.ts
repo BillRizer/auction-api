@@ -55,4 +55,22 @@ describe('UserService', () => {
     expect(encryptService).toBeDefined();
     expect(userRepository).toBeDefined();
   });
+
+  describe('findByEmail', () => {
+    it('should find user By Email', async () => {
+      const result = await userService.findByEmail('exist@email.com');
+
+      expect(result).toEqual(userEntity);
+      expect(userRepository.findOneBy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return null when user not found', async () => {
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(null);
+
+      const result = await userService.findByEmail('not-exist@email.com');
+
+      expect(result).toEqual(null);
+      expect(userRepository.findOneBy).toHaveBeenCalledTimes(1);
+    });
+  });
 });
