@@ -3,6 +3,7 @@ import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { mockUser } from '../utils/mock/user';
+import { CreateUserDto } from './dto/create-user.dto';
 
 const newUserData = {
   ...mockUser,
@@ -42,5 +43,19 @@ describe('UserController', () => {
   it('should be defined', () => {
     expect(userController).toBeDefined();
     expect(userService).toBeDefined();
+  });
+
+  describe('Create', () => {
+    it('should create new user', async () => {
+      const newUser: CreateUserDto = {
+        email: mockUser.email,
+        name: mockUser.name,
+        password: mockUser.password,
+      };
+      const created: User = (await userController.create(newUser)) || undefined;
+
+      expect(created.email).toEqual(mockUser.email);
+      expect(created.name).toEqual(mockUser.name);
+    });
   });
 });
