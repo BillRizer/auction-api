@@ -4,6 +4,7 @@ import { EncryptService } from '../encrypt/encrypt.service';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -50,5 +51,37 @@ export class UserService {
     } catch (error) {
       throw new NotFoundException('Could not find this user');
     }
+  }
+
+  async update(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.findOneOrFail(userId);
+    if (updateUserDto.old_password?.length > 0) {
+      const validPassword = await this.encrypt.compareHash(
+        updateUserDto.old_password,
+        user.password,
+      );
+      if (!validPassword) {
+        throw new Error('The old password is incorrect');
+      }
+      updateUserDto.password = await this.encrypt.encrypHash(
+        updateUserDto.password,
+      );
+    }
+    try {
+      this.userRepository.merge(user, updateUserDto);
+      return await this.userRepository.save(user);
+    } catch (error) {
+      //TODO: add in log
+      // error. sqlMessage and error.sql
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new NotFoundException('Could not update, this email exists');
+      }
+      throw new NotFoundException('Could not update');
+    }
+  }
+
+  async deleteById(id: string) {
+    await this.findOneOrFail(id);
+    await this.userRepository.softDelete(id);
   }
 }
