@@ -6,6 +6,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -27,11 +28,14 @@ export class User {
   @IsNumber()
   public credit: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   public createdAt: string;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   public updatedAt: string;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  public deletedAt: string;
 
   constructor(user?: Partial<User>) {
     this.id = user?.id;
@@ -41,5 +45,6 @@ export class User {
     this.credit = user?.credit;
     this.createdAt = user?.createdAt;
     this.updatedAt = user?.updatedAt;
+    this.deletedAt = user?.deletedAt;
   }
 }
