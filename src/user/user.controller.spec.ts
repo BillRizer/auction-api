@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { mockUser } from '../utils/mock/user';
 import { CreateUserDto } from './dto/create-user.dto';
+import RequestWithUser from 'src/auth/interface/request-with-user.interface';
 
 const newUserData = {
   ...mockUser,
@@ -56,6 +57,16 @@ describe('UserController', () => {
 
       expect(created.email).toEqual(mockUser.email);
       expect(created.name).toEqual(mockUser.name);
+    });
+  });
+
+  describe('getProfile', () => {
+    it('should find user', async () => {
+      const profile = await userController.getProfile({
+        user: { userId: 'not-important-id' },
+      } as RequestWithUser);
+
+      expect(profile).toEqual(newUserEntity);
     });
   });
 });
