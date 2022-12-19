@@ -19,7 +19,27 @@ services:
     networks:
       - private-network
     
+  postgres_db:
+    container_name: postgres_db
+    stdin_open: true # docker run -i
+    tty: true # docker run -t 
+    build:
+        context: ./databases/postgres/
+        dockerfile: Dockerfile
+    ports:
+        - '5432:5432'
+    env_file:
+        - .env
+        - .env.${ENV}
+    environment:
+        - PGDATA=/var/lib/postgresql/data
+    volumes:
+        - postgres-data:/var/lib/postgresql/data
+    networks:
+        - private-network
+          
 networks:
   private-network:
+
 volumes:
-  pgdata:
+  postgres-data:
