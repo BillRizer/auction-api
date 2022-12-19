@@ -30,9 +30,6 @@ echo "> Set ENV=${ENV}, TAG_VERSION=${TAG_VERSION}..."
 export ENV=$ENV
 export TAG_VERSION=$TAG_VERSION
 
-# cat '.env' && echo -e "\n"
-# cat '.env.'$ENV && echo -e "\n"
-
 docker-compose -f './docker-compose.yml' up --build -V
 
 sleep 2

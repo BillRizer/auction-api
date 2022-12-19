@@ -17,8 +17,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-# RUN npm install --only=production
-RUN npm ci --only=production && npm cache clean --force
+RUN npm install --only=production
 
 COPY . .
 
