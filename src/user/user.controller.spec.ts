@@ -69,4 +69,19 @@ describe('UserController', () => {
       expect(profile).toEqual(newUserEntity);
     });
   });
+
+  describe('Update ', () => {
+    it('should update user data', async () => {
+      const newUser: CreateUserDto = {
+        ...updatedUserData,
+      };
+      const updated = await userController.update(
+        { user: { userId: 'not-important-id' } } as RequestWithUser,
+        newUser,
+      );
+
+      expect(updated).not.toEqual(newUserData);
+      expect(updated).toEqual(updated);
+    });
+  });
 });
