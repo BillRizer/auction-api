@@ -5,6 +5,7 @@ import { EncryptService } from '../encrypt/encrypt.service';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { mockUser } from '../utils/mock/user';
 import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 const userData = {
   ...mockUser,
@@ -71,6 +72,23 @@ describe('UserService', () => {
 
       expect(result).toEqual(null);
       expect(userRepository.findOneBy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('create', () => {
+    it('should create user', async () => {
+      const newUser: CreateUserDto = {
+        ...userData,
+        email: 'new-email@email.com',
+      };
+
+      jest.spyOn(userService, 'findByEmail').mockResolvedValueOnce(null);
+      const created = await userService.create(newUser);
+
+      expect(created).toEqual(userEntity);
+      expect(userRepository.create).toHaveBeenCalledTimes(1);
+      expect(encryptService.encrypHash).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
     });
   });
 });
