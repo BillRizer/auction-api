@@ -91,4 +91,20 @@ describe('UserService', () => {
       expect(userRepository.save).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('findOne', () => {
+    it('should find user', async () => {
+      const result = await userService.findOne('uuid-fake');
+
+      expect(result).toEqual(userEntity);
+    });
+
+    it('should return null when not found user', async () => {
+      jest.spyOn(userService, 'findOne').mockResolvedValueOnce(null);
+
+      const result = await userService.findOne('uuid-fake');
+
+      expect(result).toEqual(null);
+    });
+  });
 });
