@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -11,6 +12,12 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        JwtModule.register({
+          secret: 'test-token',
+          signOptions: { expiresIn: '60s' },
+        }),
+      ],
       providers: [AuthService],
     }).compile();
 
@@ -47,8 +54,8 @@ describe('AuthService', () => {
   });
 
   it('should generate jwt token greater then zero', async () => {
-    const login = service.login(mockUser);
+    const login = await service.login(mockUser);
 
-    expect(login.jwt).not.toHaveLength(0);
+    expect(login.jwt.length).toBeGreaterThan(32);
   });
 });
