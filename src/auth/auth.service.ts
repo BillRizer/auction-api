@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 export type User = any;
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtService: JwtService) {}
+
   // mocked function should to be removed
   private readonly users = [
     {
@@ -29,5 +32,12 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return {
+      jwt: this.jwtService.sign(payload),
+    };
   }
 }
