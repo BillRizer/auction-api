@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from '../encrypt/encrypt.service';
 import { Repository } from 'typeorm';
@@ -38,6 +38,17 @@ export class UserService {
     } catch (error) {
       console.log(error);
       return null;
+    }
+  }
+  async findOne(id: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { id: id } });
+  }
+
+  async findOneOrFail(id: string): Promise<User> {
+    try {
+      return await this.userRepository.findOneOrFail({ where: { id: id } });
+    } catch (error) {
+      throw new NotFoundException('Could not find this user');
     }
   }
 }
