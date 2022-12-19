@@ -6,6 +6,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { mockUser } from '../utils/mock/user';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 const userData = {
   ...mockUser,
@@ -105,6 +106,30 @@ describe('UserService', () => {
       const result = await userService.findOne('uuid-fake');
 
       expect(result).toEqual(null);
+    });
+  });
+
+  describe('Update', () => {
+    it('should update user', async () => {
+      const updateData: UpdateUserDto = {
+        ...updatedUserData,
+      };
+
+      jest
+        .spyOn(userRepository, 'save')
+        .mockResolvedValueOnce(updatedUserEntity);
+      const updated = await userService.update('fake-uuid', updateData);
+
+      expect(updated).toEqual(updateData);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an exception', async () => {
+      jest.spyOn(userRepository, 'save').mockRejectedValueOnce(new Error());
+
+      expect(
+        userService.update('fake-uuid', UpdateUserDto),
+      ).rejects.toThrowError();
     });
   });
 });
