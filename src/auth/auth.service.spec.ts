@@ -45,4 +45,10 @@ describe('AuthService', () => {
 
     expect(validate).toEqual(epectedDataUser);
   });
+
+  it('should generate jwt token greater then zero', async () => {
+    const login = service.login(mockUser);
+
+    expect(login.jwt).not.toHaveLength(0);
+  });
 });
