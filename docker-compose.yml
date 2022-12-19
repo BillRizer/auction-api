@@ -18,14 +18,12 @@ services:
       - .env.${ENV}
     networks:
       - private-network
-    
+
   postgres_db:
     container_name: postgres_db
     stdin_open: true # docker run -i
     tty: true # docker run -t 
-    build:
-        context: ./databases/postgres/
-        dockerfile: Dockerfile
+    image: postgres
     ports:
         - '5432:5432'
     env_file:

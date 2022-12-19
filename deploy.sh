@@ -30,7 +30,7 @@ echo "> Set ENV=${ENV}, TAG_VERSION=${TAG_VERSION}..."
 export ENV=$ENV
 export TAG_VERSION=$TAG_VERSION
 
-docker-compose -f './docker-compose.yml' down --remove-orphans
+docker-compose -f './docker-compose.yml' rm
 
 docker-compose -f './docker-compose.yml' up --build
 
