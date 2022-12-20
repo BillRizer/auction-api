@@ -18,4 +18,8 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty({ message: 'Name Field missing' })
   name: string;
+
+  @IsNumber()
+  @IsOptional()
+  credit?: number;
 }

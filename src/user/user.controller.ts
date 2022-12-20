@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -25,7 +26,7 @@ export class UserController {
   @Public()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto);
+    return await this.userService.create({ ...createUserDto, credit: 0 });
   }
 
   @Get()
@@ -48,6 +49,19 @@ export class UserController {
         throw new UnauthorizedException();
       }
       return await this.userService.update(userId, updateCompanyDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Delete()
+  delete(@Request() req: RequestWithUser) {
+    try {
+      const userId = req.user.userId;
+      if (!userId) {
+        throw new UnauthorizedException();
+      }
+      return this.userService.deleteById(userId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
