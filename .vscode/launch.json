@@ -4,7 +4,7 @@
       {
         "type": "node",
         "request": "attach",
-        "name": "Debug: app-name",
+        "name": "Debug: Autction API",
         "remoteRoot": "/usr/src/app",
         "localRoot": "${workspaceFolder}",
         "protocol": "inspector",
