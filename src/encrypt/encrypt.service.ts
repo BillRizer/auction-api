@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { bcrypt } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EncryptService {
   constructor(private readonly configService: ConfigService) {}
 
   public async encrypHash(payload: string): Promise<string> {
-    return await bcrypt.hash(payload, this.configService.get('BCRYPT_SALT'));
+    return await bcrypt.hash(payload, +this.configService.get('BCRYPT_SALT'));
   }
 
   public async compareHash(
