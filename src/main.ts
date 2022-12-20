@@ -3,12 +3,14 @@ import { AppModule } from './app.module';
 import { EEnvironments, getEnvironment } from './utils/helpers';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const versionApi = 'api/v1';
 
   app.setGlobalPrefix(versionApi);
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
