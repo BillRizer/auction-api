@@ -6,10 +6,14 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { UserModule } from '../user/user.module';
+import { EncryptModule } from '../encrypt/encrypt.module';
 
 @Module({
   imports: [
     PassportModule,
+    UserModule,
+    EncryptModule,
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {
         return {
