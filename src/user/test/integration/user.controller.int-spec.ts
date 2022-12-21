@@ -109,6 +109,45 @@ describe('UserController (e2e)', () => {
         });
     });
   });
+
+  describe('/user [PATCH] (integration)', () => {
+    let jwtToken = '';
+    beforeAll(async () => {
+      await userService.create(createdUserStub);
+      //TODO refactor this, duplicate code for get jwt token
+      jwtToken = await getJwtToken(
+        httpServer,
+        createdUserStub.email,
+        createdUserStub.password,
+      );
+    });
+
+    it('It Should update and return user profile', async () => {
+      const updatedUserMock: UpdateUserDto = {
+        credit: 10,
+        name: 'Name Updated',
+      };
+      return request(httpServer)
+        .patch('/user')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .send(updatedUserMock)
+        .expect(HttpStatus.OK)
+        .expect((response: request.Response) => {
+          const { id, name, password, email, credit, createdAt, updatedAt } =
+            response.body;
+
+          expect(typeof id).toBe('string'),
+            expect(password).toBeUndefined(),
+            expect(name).toEqual(updatedUserMock.name),
+            expect(credit).toEqual(updatedUserMock.credit),
+            expect(email).toEqual(createdUserStub.email),
+            expect(createdAt.length).toBeGreaterThan(1),
+            expect(updatedAt.length).toBeGreaterThan(1);
+        });
+    });
+  });
 });
 
 async function getJwtToken(httpServer, email: string, password: string) {
