@@ -147,6 +147,22 @@ describe('UserController (e2e)', () => {
             expect(updatedAt.length).toBeGreaterThan(1);
         });
     });
+
+    it('It Should update password', async () => {
+      const updatedUserMock: UpdateUserDto = {
+        old_password: createdUserStub.password,
+        password: 'my-hardcode-password',
+      };
+      return request(httpServer)
+        .patch('/user')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .send(updatedUserMock)
+        .expect(HttpStatus.OK);
+    });
+
+
   });
 });
 
