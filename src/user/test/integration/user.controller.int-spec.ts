@@ -162,7 +162,19 @@ describe('UserController (e2e)', () => {
         .expect(HttpStatus.OK);
     });
 
-
+    it('It Should prevent update password with wrong current password', async () => {
+      const updatedUserMock: UpdateUserDto = {
+        old_password: 'wrong-password-uau',
+        password: 'my-hardcode-password',
+      };
+      return request(httpServer)
+        .patch('/user')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .send(updatedUserMock)
+        .expect(HttpStatus.BAD_REQUEST);
+    });
   });
 });
 
