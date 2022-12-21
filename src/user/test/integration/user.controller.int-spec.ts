@@ -75,7 +75,40 @@ describe('UserController (e2e)', () => {
     });
   });
 
+  describe('/user [GET] (integration)', () => {
+    let jwtToken = '';
+    beforeAll(async () => {
+      await userService.create(createdUserStub);
+      //TODO refactor this, duplicate code for get jwt token
+      jwtToken = await getJwtToken(
+        httpServer,
+        createdUserStub.email,
+        createdUserStub.password,
+      );
+    });
 
+    it('It Should return user profile', async () => {
+      console.log(jwtToken);
+      return request(httpServer)
+        .get('/user')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .expect(HttpStatus.OK)
+        .expect((response: request.Response) => {
+          const { id, name, password, email, credit, createdAt, updatedAt } =
+            response.body;
+
+          expect(typeof id).toBe('string'),
+            expect(password).toBeUndefined(),
+            expect(name).toEqual(createdUserStub.name),
+            expect(email).toEqual(createdUserStub.email),
+            expect(credit).toEqual(0),
+            expect(createdAt.length).toBeGreaterThan(1),
+            expect(updatedAt.length).toBeGreaterThan(1);
+        });
+    });
+  });
 });
 
 async function getJwtToken(httpServer, email: string, password: string) {
