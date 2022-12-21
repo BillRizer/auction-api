@@ -202,6 +202,32 @@ describe('UserController (integration)', () => {
         .expect(HttpStatus.BAD_REQUEST);
     });
   });
+
+  describe('/user [DELETE] (integration)', () => {
+    let jwtToken = '';
+    beforeAll(async () => {
+      await userService.create(createdUserStub);
+      //TODO refactor this, duplicate code for get jwt token
+      jwtToken = await getJwtToken(
+        httpServer,
+        createdUserStub.email,
+        createdUserStub.password,
+      );
+    });
+
+    afterAll(async () => {
+      await userRepository.clear();
+    });
+
+    it('It Should soft delete user', async () => {
+      return request(httpServer)
+        .delete('/user')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .expect(HttpStatus.OK);
+    });
+  });
 });
 
 async function getJwtToken(httpServer, email: string, password: string) {
