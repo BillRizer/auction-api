@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 export enum EEnvironments {
   DEV = 'DEV',
   TEST = 'TEST',
@@ -15,3 +17,4 @@ export const getEnvironment = (): EEnvironments => {
   }
   return env;
 };
+export const envFilePath = join(__dirname, '../../');
