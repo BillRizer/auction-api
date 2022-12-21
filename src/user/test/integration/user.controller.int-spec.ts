@@ -13,6 +13,7 @@ import { UserService } from '../../../user/user.service';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { envFilePath } from '../../../utils/helpers';
 import { join } from 'path';
+import { getJwtToken } from '../../../auth/test/integration/auth.controller.int-spec';
 
 describe('UserController (integration)', () => {
   let app: INestApplication;
@@ -223,20 +224,3 @@ describe('UserController (integration)', () => {
     });
   });
 });
-
-async function getJwtToken(httpServer, email: string, password: string) {
-  let jwtToken = '';
-  try {
-    await request(httpServer)
-      .post('/auth/login')
-      .set('Accept', 'application/json')
-      .send({ email, password })
-      .expect(HttpStatus.OK)
-      .then((response) => {
-        jwtToken = response.body.jwt;
-      });
-    return jwtToken;
-  } catch (error) {
-    return null;
-  }
-}
