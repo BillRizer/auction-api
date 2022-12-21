@@ -18,6 +18,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseProfileUser } from './dto/response-profile-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserNotCreatedException } from './exceptions/user-not-created.exception';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -30,10 +31,14 @@ export class UserController {
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<ResponseProfileUser> {
-    const { password, deletedAt, ...user } = await this.userService.create({
+    const userCreated = await this.userService.create({
       ...createUserDto,
       credit: 0,
     });
+    if (!userCreated) {
+      throw new UserNotCreatedException();
+    }
+    const { password, deletedAt, ...user } = userCreated;
     return <ResponseProfileUser>{ ...user };
   }
 

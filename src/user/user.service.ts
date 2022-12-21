@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmailAlreadyExistException } from '../common/exceptions/email-already-exists.exception';
 
 @Injectable()
 export class UserService {
@@ -23,10 +24,10 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User | null> {
+    if (await this.findByEmail(createUserDto.email)) {
+      throw new EmailAlreadyExistException();
+    }
     try {
-      if (await this.findByEmail(createUserDto.email)) {
-        throw new Error('Email address already exists.');
-      }
       const hashedPassword = await this.encrypt.encrypHash(
         createUserDto.password,
       );
@@ -37,7 +38,7 @@ export class UserService {
       });
       return await this.userRepository.save(created);
     } catch (error) {
-      console.log(error);
+      //TODO log here
       return null;
     }
   }
