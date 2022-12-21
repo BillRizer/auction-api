@@ -14,7 +14,7 @@ import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { envFilePath } from '../../../utils/helpers';
 import { join } from 'path';
 
-describe('UserController (e2e)', () => {
+describe('UserController (integration)', () => {
   let app: INestApplication;
   let httpServer: any;
   let userRepository: Repository<User>;
@@ -46,6 +46,9 @@ describe('UserController (e2e)', () => {
     httpServer = app.getHttpServer();
     userRepository = app.get<Repository<User>>(getRepositoryToken(User));
     userService = app.get<UserService>(UserService);
+
+    //clean table user
+    await userRepository.clear();
   });
 
   afterAll(async () => {
@@ -54,8 +57,12 @@ describe('UserController (e2e)', () => {
   });
 
   describe('/user [POST] (integration)', () => {
+    afterAll(async () => {
+      await userRepository.clear();
+    });
+
     it('it should register a user and return the new user object', async () => {
-      request(httpServer)
+      await request(httpServer)
         .post('/user')
         .set('Accept', 'application/json')
         .send(createdUserStub)
@@ -73,6 +80,19 @@ describe('UserController (e2e)', () => {
 
       await userRepository.clear();
     });
+
+    it('it should prevent register a user if email already exists', async () => {
+      await userService.create(createdUserStub);
+
+      return request(httpServer)
+        .post('/user')
+        .set('Accept', 'application/json')
+        .send(createdUserStub)
+        .expect(HttpStatus.BAD_REQUEST)
+        .expect((response: request.Response) => {
+          expect(response.body.message).toEqual('Email already exists');
+        });
+    });
   });
 
   describe('/user [GET] (integration)', () => {
@@ -86,9 +106,11 @@ describe('UserController (e2e)', () => {
         createdUserStub.password,
       );
     });
+    afterAll(async () => {
+      await userRepository.clear();
+    });
 
     it('It Should return user profile', async () => {
-      console.log(jwtToken);
       return request(httpServer)
         .get('/user')
         .set({
@@ -120,6 +142,10 @@ describe('UserController (e2e)', () => {
         createdUserStub.email,
         createdUserStub.password,
       );
+    });
+
+    afterAll(async () => {
+      await userRepository.clear();
     });
 
     it('It Should update and return user profile', async () => {
