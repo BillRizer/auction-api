@@ -5,6 +5,7 @@ import { UserService } from './user.service';
 import { mockUser } from '../utils/mock/user';
 import { CreateUserDto } from './dto/create-user.dto';
 import RequestWithUser from 'src/auth/interface/request-with-user.interface';
+import { ResponseProfileUser } from './dto/response-profile-user.dto';
 
 const newUserData = {
   ...mockUser,
@@ -53,7 +54,7 @@ describe('UserController', () => {
         name: mockUser.name,
         password: mockUser.password,
       };
-      const created: User = (await userController.create(newUser)) || undefined;
+      const created = (await userController.create(newUser)) || undefined;
 
       expect(created.email).toEqual(mockUser.email);
       expect(created.name).toEqual(mockUser.name);
@@ -62,11 +63,14 @@ describe('UserController', () => {
 
   describe('getProfile', () => {
     it('should find user', async () => {
-      const profile = await userController.getProfile({
+      const profile: ResponseProfileUser = await userController.getProfile({
         user: { userId: 'not-important-id' },
       } as RequestWithUser);
 
-      expect(profile).toEqual(newUserEntity);
+      expect(profile.id).toEqual(newUserEntity.id);
+      expect(profile.email).toEqual(newUserEntity.email);
+      expect(profile.name).toEqual(newUserEntity.name);
+      expect(profile.credit).toEqual(newUserEntity.credit);
     });
   });
 
