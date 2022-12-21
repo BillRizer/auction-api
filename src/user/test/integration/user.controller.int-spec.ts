@@ -51,13 +51,8 @@ describe('UserController (integration)', () => {
     await userRepository.clear();
   });
 
-  afterAll(async () => {
-    await userRepository.clear();
-    app.close();
-  });
-
   describe('/user [POST] (integration)', () => {
-    afterAll(async () => {
+    beforeEach(async () => {
       await userRepository.clear();
     });
 
@@ -77,8 +72,6 @@ describe('UserController (integration)', () => {
             expect(credit).toEqual(0);
         })
         .expect(HttpStatus.CREATED);
-
-      await userRepository.clear();
     });
 
     it('it should prevent register a user if email already exists', async () => {
@@ -98,6 +91,7 @@ describe('UserController (integration)', () => {
   describe('/user [GET] (integration)', () => {
     let jwtToken = '';
     beforeAll(async () => {
+      await userRepository.clear();
       await userService.create(createdUserStub);
       //TODO refactor this, duplicate code for get jwt token
       jwtToken = await getJwtToken(
@@ -221,7 +215,7 @@ describe('UserController (integration)', () => {
 
     it('It Should soft delete user', async () => {
       return request(httpServer)
-        .delete('/user')
+        .patch('/user')
         .set({
           Authorization: `Bearer ${jwtToken}`,
         })
