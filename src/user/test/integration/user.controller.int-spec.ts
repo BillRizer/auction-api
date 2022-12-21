@@ -53,4 +53,25 @@ describe('UserController (e2e)', () => {
     app.close();
   });
 
+  describe('/user [POST] (integration)', () => {
+    it('it should register a user and return the new user object', async () => {
+      request(httpServer)
+        .post('/user')
+        .set('Accept', 'application/json')
+        .send(createdUserStub)
+        .expect((response: request.Response) => {
+          const { id, name, password, email, credit, createdAt, updatedAt } =
+            response.body;
+
+          expect(typeof id).toBe('string'),
+            expect(password).toBeUndefined(),
+            expect(name).toEqual(createdUserStub.name),
+            expect(email).toEqual(createdUserStub.email),
+            expect(credit).toEqual(0);
+        })
+        .expect(HttpStatus.CREATED);
+
+      await userRepository.clear();
+    });
+  });
 });
