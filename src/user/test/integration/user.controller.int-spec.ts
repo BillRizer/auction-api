@@ -9,12 +9,18 @@ import { Repository } from 'typeorm';
 import { User } from '../../../user/entities/user.entity';
 import { DatabaseModule } from '../../../database/database.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserService } from '../../../user/user.service';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { envFilePath } from '../../../utils/helpers';
+import { join } from 'path';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
   let httpServer: any;
   let userRepository: Repository<User>;
-  const userMocked: CreateUserDto = {
+  let userService: UserService;
+
+  const createdUserStub: CreateUserDto = {
     email: userStub.email,
     name: userStub.name,
     credit: userStub.credit,
@@ -28,8 +34,8 @@ describe('UserController (e2e)', () => {
         DatabaseModule,
         ConfigModule.forRoot({
           envFilePath: [
-            '/media/odin/ssd-data/work/projects/auction-api/auction-api/.env',
-            '/media/odin/ssd-data/work/projects/auction-api/auction-api/.env.test',
+            join(envFilePath, '.env'),
+            join(envFilePath, '.env.test'),
           ],
         }),
       ],
@@ -39,32 +45,12 @@ describe('UserController (e2e)', () => {
     await app.init();
     httpServer = app.getHttpServer();
     userRepository = app.get<Repository<User>>(getRepositoryToken(User));
+    userService = app.get<UserService>(UserService);
   });
 
   afterAll(async () => {
-    // await userRepository.clear();
+    await userRepository.clear();
     app.close();
   });
-
-  it('it should register a user and return the new user object', async () => {
-    request(httpServer)
-      .post('/user')
-      .set('Accept', 'application/json')
-      .send(userMocked)
-      .expect((response: request.Response) => {
-        const { id, name, password, email, credit, createdAt, updatedAt } =
-          response.body;
-
-        expect(typeof id).toBe('string'),
-          expect(password).toBeUndefined(),
-          expect(name).toEqual(userMocked.name),
-          expect(email).toEqual(userMocked.email),
-          expect(credit).toEqual(0);
-      })
-      .expect(HttpStatus.CREATED);
-
-    await userRepository.clear();
-  });
-
 
 });
