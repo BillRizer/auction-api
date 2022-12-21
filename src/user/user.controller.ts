@@ -45,10 +45,17 @@ export class UserController {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    const { password, deletedAt, ...user } = await this.userService.findOne(
-      userId,
-    );
-    return <ResponseProfileUser>{ ...user };
+    try {
+      const { password, deletedAt, ...user } = await this.userService.findOne(
+        userId,
+      );
+      return <ResponseProfileUser>{ ...user };
+    } catch (error) {
+      throw new HttpException(
+        'problema ao buscar perfil',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Patch()
