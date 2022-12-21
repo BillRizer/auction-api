@@ -54,6 +54,10 @@ describe('AuthController (integration)', () => {
   });
 
   describe('/auth/login [POST] (integration)', () => {
+    beforeEach(async () => {
+      await userRepository.clear();
+    });
+
     it('it should receive jwt token', async () => {
       await userService.create(createdUserStub);
 
@@ -63,6 +67,19 @@ describe('AuthController (integration)', () => {
         createdUserStub.password,
       );
       expect(jwt.length).toBeGreaterThan(30);
+    });
+
+    it('it should receive 401 when using wrong credentials', async () => {
+      await userService.create(createdUserStub);
+
+      return request(httpServer)
+        .post('/auth/login')
+        .set('Accept', 'application/json')
+        .send({ email: 'wrong-email', password: 'wrong-pass' })
+        .expect(HttpStatus.UNAUTHORIZED)
+        .then((response) => {
+          expect(response.body.message).toEqual('Unauthorized');
+        });
     });
   });
 });
