@@ -63,7 +63,7 @@ export class UserController {
       }
       const { password, deletedAt, ...user } = await this.userService.update(
         userId,
-        updateCompanyDto,
+        { ...updateCompanyDto, email: undefined },
       );
       return <ResponseProfileUser>{ ...user };
     } catch (error) {
@@ -80,7 +80,6 @@ export class UserController {
         throw new UnauthorizedException();
       }
       await this.userService.deleteById(userId);
-
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
