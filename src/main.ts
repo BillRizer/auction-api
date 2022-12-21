@@ -18,7 +18,7 @@ async function bootstrap() {
     }),
   );
 
-  if (getEnvironment() == EEnvironments.DEV) {
+  if (getEnvironment() != EEnvironments.PROD) {
     console.log(getEnvironment());
     const config = new DocumentBuilder()
       .setTitle('Auction API')
