@@ -1,12 +1,25 @@
 import { User } from '../../../user/entities/user.entity';
 
-export const userStub = new User({
-  email: 'test@example.com',
+const user = new User({
+  email: 'email@email.com',
   id: 'asdaa-asda-sdas-das',
   credit: 0,
   name: 'Fake name',
-  password: '$2b$10$Hg/aEemqbZJdtAwmlmr6x.5nUTJdc0JZTjrvQKlswdwiL8n19ohyC',
+  password: 'pass',
   createdAt: '',
   updatedAt: '',
   deletedAt: '',
+});
+
+export const userStub = user;
+
+const { email, id, credit, name, password, createdAt, updatedAt, deletedAt } =
+  user;
+export const userProfileStub = new User({
+  name,
+  email,
+  credit,
+  createdAt,
+  updatedAt,
+  deletedAt,
 });
