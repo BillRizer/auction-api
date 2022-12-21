@@ -74,4 +74,23 @@ describe('UserController (e2e)', () => {
       await userRepository.clear();
     });
   });
+
+
 });
+
+async function getJwtToken(httpServer, email: string, password: string) {
+  let jwtToken = '';
+  try {
+    await request(httpServer)
+      .post('/auth/login')
+      .set('Accept', 'application/json')
+      .send({ email, password })
+      .expect(HttpStatus.OK)
+      .then((response) => {
+        jwtToken = response.body.jwt;
+      });
+    return jwtToken;
+  } catch (error) {
+    return null;
+  }
+}
