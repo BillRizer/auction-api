@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { ProductNotFoundException } from './exceptions/product-not-found.exception';
 
 @Injectable()
 export class ProductService {
@@ -38,7 +39,7 @@ export class ProductService {
     try {
       return await this.productRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
-      throw new NotFoundException('Could not find this product');
+      throw new ProductNotFoundException();
     }
   }
 }

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
+import { ProductNotFoundException } from './exceptions/product-not-found.exception';
 import { ProductService } from './product.service';
 import {
   createProductStub,
@@ -77,6 +78,15 @@ describe('ProductService', () => {
       const product = await productService.findOne('fake-user-id-uuid');
 
       expect(product).toEqual(productEntityStub);
+    });
+    it('should throw exception ProductNotFoundException', async () => {
+      jest
+        .spyOn(productRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new ProductNotFoundException());
+
+      const product = productService.findOne('fake-user-id-uu');
+
+      expect(product).rejects.toThrowError();
     });
   });
 });
