@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductService } from './product.service';
 import {
   createProductStub,
   productEntityStub,
+  productListEntitiesStub,
 } from './test/stubs/product.stub';
 
 describe('ProductService', () => {
@@ -22,6 +22,7 @@ describe('ProductService', () => {
           useValue: {
             create: jest.fn().mockResolvedValue(productEntityStub),
             save: jest.fn().mockResolvedValue(productEntityStub),
+            find: jest.fn().mockResolvedValue(productListEntitiesStub),
           },
         },
       ],
@@ -40,10 +41,19 @@ describe('ProductService', () => {
 
   describe('create', () => {
     it('should create new product', async () => {
-      const created = await productRepository.create(createProductStub);
+      const created = await productService.create(createProductStub);
 
       expect(created).toEqual(productEntityStub);
     });
-    
+
+    it('should throw error', async () => {
+      jest.spyOn(productRepository, 'save').mockRejectedValueOnce(new Error());
+
+      const created = productService.create(createProductStub);
+
+      expect(created).resolves.toEqual(null);
+    });
   });
+  
+
 });

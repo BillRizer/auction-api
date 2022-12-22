@@ -20,8 +20,6 @@ export class ProductService {
       return await this.productRepository.save(created);
     } catch (error) {
       //TODO log here
-      console.log(error);
-
       return null;
     }
   }
