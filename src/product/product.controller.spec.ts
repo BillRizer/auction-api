@@ -92,15 +92,26 @@ describe('ProductController', () => {
       });
     });
 
-    describe('get', () => {
-      it('should get user', async () => {
+    describe('findAll', () => {
+      it('should get all products by user', async () => {
         const req = {
           user: { userId: 'id-mocked' },
         } as Partial<RequestWithUser>;
         const products = await productController.findAll(
           req as RequestWithUser,
         );
+
         expect(products).toEqual(productListEntitiesStub);
+      });
+
+      it('Should throw UnauthorizedException', async () => {
+        jest
+          .spyOn(productController, 'findAll')
+          .mockRejectedValueOnce(new UnauthorizedException());
+
+        const products = productController.findAll({} as RequestWithUser);
+
+        expect(products).rejects.toThrowError();
       });
     });
   });
