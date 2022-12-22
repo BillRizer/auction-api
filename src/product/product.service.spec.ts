@@ -23,6 +23,7 @@ describe('ProductService', () => {
             create: jest.fn().mockResolvedValue(productEntityStub),
             save: jest.fn().mockResolvedValue(productEntityStub),
             find: jest.fn().mockResolvedValue(productListEntitiesStub),
+            findOneOrFail: jest.fn().mockResolvedValue(productEntityStub),
           },
         },
       ],
@@ -68,6 +69,14 @@ describe('ProductService', () => {
       const products = await productService.findAll('fake-user-id-uuid');
 
       expect(products).toEqual([]);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return product', async () => {
+      const product = await productService.findOne('fake-user-id-uuid');
+
+      expect(product).toEqual(productEntityStub);
     });
   });
 });
