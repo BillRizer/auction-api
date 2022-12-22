@@ -49,12 +49,12 @@ describe('UserController (integration)', () => {
     userService = app.get<UserService>(UserService);
 
     //clean table user
-    await userRepository.clear();
+    await cleanUserTable(userRepository);
   });
 
   describe('/user [POST] (integration)', () => {
     beforeEach(async () => {
-      await userRepository.clear();
+      await cleanUserTable(userRepository);
     });
 
     it('it should register a user and return the new user object', async () => {
@@ -92,7 +92,7 @@ describe('UserController (integration)', () => {
   describe('/user [GET] (integration)', () => {
     let jwtToken = '';
     beforeAll(async () => {
-      await userRepository.clear();
+      await cleanUserTable(userRepository);
       await userService.create(createdUserStub);
       //TODO refactor this, duplicate code for get jwt token
       jwtToken = await getJwtToken(
@@ -102,7 +102,7 @@ describe('UserController (integration)', () => {
       );
     });
     afterAll(async () => {
-      await userRepository.clear();
+      await cleanUserTable(userRepository);
     });
 
     it('It Should return user profile', async () => {
@@ -140,7 +140,7 @@ describe('UserController (integration)', () => {
     });
 
     afterAll(async () => {
-      await userRepository.clear();
+      await cleanUserTable(userRepository);
     });
 
     it('It Should update and return user profile', async () => {
@@ -211,7 +211,7 @@ describe('UserController (integration)', () => {
     });
 
     afterAll(async () => {
-      await userRepository.clear();
+      await cleanUserTable(userRepository);
     });
 
     it('It Should soft delete user', async () => {
@@ -224,3 +224,7 @@ describe('UserController (integration)', () => {
     });
   });
 });
+
+export async function cleanUserTable(userRepository) {
+  await userRepository.query(`TRUNCATE "user" CASCADE;`);
+}

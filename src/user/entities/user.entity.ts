@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { IsNumber, MaxLength, MinLength } from 'class-validator';
+import { Product } from '../../product/entities/product.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -36,6 +38,12 @@ export class User {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   public deletedAt: string;
+
+  @OneToMany((type) => Product, (user) => User, {
+    cascade: true,
+    nullable: true,
+  })
+  product?: Product;
 
   constructor(user?: Partial<User>) {
     this.id = user?.id;
