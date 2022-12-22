@@ -6,6 +6,7 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import {
   productEntityStub,
+  productListEntitiesStub,
   responseCreatedProduct,
 } from './test/stubs/product.stub';
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
@@ -24,6 +25,7 @@ describe('ProductController', () => {
           provide: ProductService,
           useValue: {
             create: jest.fn().mockResolvedValue(productEntityStub),
+            findAll: jest.fn().mockResolvedValue(productListEntitiesStub),
           },
         },
       ],
@@ -39,48 +41,67 @@ describe('ProductController', () => {
   });
 
   describe('productController', () => {
-    it('Should create new product', async () => {
-      const req = { user: { userId: 'id-mocked' } } as Partial<RequestWithUser>;
-      const newProduct: CreateProductDto = {
-        ...productEntityStub,
-        user: { id: productEntityStub.id },
-      };
+    describe('create', () => {
+      it('Should create new product', async () => {
+        const req = {
+          user: { userId: 'id-mocked' },
+        } as Partial<RequestWithUser>;
+        const newProduct: CreateProductDto = {
+          ...productEntityStub,
+          user: { id: productEntityStub.id },
+        };
 
-      const created = await productController.create(
-        req as RequestWithUser,
-        newProduct,
-      );
+        const created = await productController.create(
+          req as RequestWithUser,
+          newProduct,
+        );
 
-      expect(created).toEqual(responseCreatedProduct);
+        expect(created).toEqual(responseCreatedProduct);
+      });
+
+      it('Should throw ProductNotCreatedException', async () => {
+        const req = {
+          user: { userId: 'id-mocked' },
+        } as Partial<RequestWithUser>;
+        const newProduct = {} as CreateProductDto;
+        jest
+          .spyOn(productController, 'create')
+          .mockRejectedValueOnce(new ProductNotCreatedException());
+
+        const created = productController.create(
+          req as RequestWithUser,
+          newProduct,
+        );
+
+        expect(created).rejects.toThrowError();
+      });
+
+      it('Should throw UnauthorizedException', async () => {
+        const req = {} as Partial<RequestWithUser>;
+        const newProduct = {} as CreateProductDto;
+        jest
+          .spyOn(productController, 'create')
+          .mockRejectedValueOnce(new UnauthorizedException());
+
+        const created = productController.create(
+          req as RequestWithUser,
+          newProduct,
+        );
+
+        expect(created).rejects.toThrowError();
+      });
     });
 
-    it('Should throw ProductNotCreatedException', async () => {
-      const req = { user: { userId: 'id-mocked' } } as Partial<RequestWithUser>;
-      const newProduct = {} as CreateProductDto;
-      jest
-        .spyOn(productController, 'create')
-        .mockRejectedValueOnce(new ProductNotCreatedException());
-
-      const created = productController.create(
-        req as RequestWithUser,
-        newProduct,
-      );
-
-      expect(created).rejects.toThrowError();
-    });
-    it('Should throw UnauthorizedException', async () => {
-      const req = {} as Partial<RequestWithUser>;
-      const newProduct = {} as CreateProductDto;
-      jest
-        .spyOn(productController, 'create')
-        .mockRejectedValueOnce(new UnauthorizedException());
-
-      const created = productController.create(
-        req as RequestWithUser,
-        newProduct,
-      );
-
-      expect(created).rejects.toThrowError();
+    describe('get', () => {
+      it('should get user', async () => {
+        const req = {
+          user: { userId: 'id-mocked' },
+        } as Partial<RequestWithUser>;
+        const products = await productController.findAll(
+          req as RequestWithUser,
+        );
+        expect(products).toEqual(productListEntitiesStub);
+      });
     });
   });
 });
