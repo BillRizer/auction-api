@@ -10,6 +10,7 @@ import {
 } from './test/stubs/product.stub';
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { ProductNotCreatedException } from './exceptions/product-not-created.exception';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('ProductController', () => {
   let productController: ProductController;
@@ -59,6 +60,20 @@ describe('ProductController', () => {
       jest
         .spyOn(productController, 'create')
         .mockRejectedValueOnce(new ProductNotCreatedException());
+
+      const created = productController.create(
+        req as RequestWithUser,
+        newProduct,
+      );
+
+      expect(created).rejects.toThrowError();
+    });
+    it('Should throw UnauthorizedException', async () => {
+      const req = {} as Partial<RequestWithUser>;
+      const newProduct = {} as CreateProductDto;
+      jest
+        .spyOn(productController, 'create')
+        .mockRejectedValueOnce(new UnauthorizedException());
 
       const created = productController.create(
         req as RequestWithUser,
