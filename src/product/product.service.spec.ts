@@ -25,6 +25,7 @@ describe('ProductService', () => {
             save: jest.fn().mockResolvedValue(productEntityStub),
             find: jest.fn().mockResolvedValue(productListEntitiesStub),
             findOneOrFail: jest.fn().mockResolvedValue(productEntityStub),
+            softDelete: jest.fn().mockResolvedValue(undefined),
           },
         },
       ],
@@ -104,6 +105,16 @@ describe('ProductService', () => {
       const product = productService.findOneOrFail('fake-user-id-uu');
 
       expect(product).rejects.toThrowError();
+    });
+  });
+
+  describe('deleteById', () => {
+    it('should delete product', async () => {
+      const deleted = await productService.deleteById('fake-uuid');
+
+      expect(deleted).toBeUndefined();
+      expect(productRepository.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(productRepository.softDelete).toHaveBeenCalledTimes(1);
     });
   });
 });

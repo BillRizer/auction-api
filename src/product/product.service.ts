@@ -42,4 +42,5 @@ export class ProductService {
       throw new ProductNotFoundException();
     }
   }
+  async deleteById(id: string) {}
 }
