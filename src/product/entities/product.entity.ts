@@ -50,15 +50,21 @@ export class Product {
     onDelete: 'CASCADE',
     nullable: false,
   })
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @JoinColumn({ name: 'user_id' })
+  user: Partial<User>;
+  //TODO verify if it is correct, force partial type
 
   constructor(product?: Partial<Product>) {
     this.id = product?.id;
     this.name = product?.name;
     this.description = product?.description;
     this.category = product?.category;
-
+    this.availableForAuction = product?.availableForAuction;
+    this.endsAt = product?.endsAt;
+    this.sold = product?.sold;
+    this.user = {
+      id: product?.user.id,
+    };
     this.createdAt = product?.createdAt;
     this.updatedAt = product?.updatedAt;
     this.deletedAt = product?.deletedAt;
