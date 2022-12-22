@@ -54,12 +54,20 @@ describe('ProductService', () => {
       expect(created).resolves.toEqual(null);
     });
   });
-  
+
   describe('findAll', () => {
     it('should return list of products', async () => {
       const products = await productService.findAll('fake-user-id-uuid');
 
       expect(products).toEqual(productListEntitiesStub);
+    });
+
+    it('should return empty list', async () => {
+      jest.spyOn(productRepository, 'find').mockResolvedValueOnce([]);
+
+      const products = await productService.findAll('fake-user-id-uuid');
+
+      expect(products).toEqual([]);
     });
   });
 });
