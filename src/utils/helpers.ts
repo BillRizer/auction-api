@@ -18,3 +18,7 @@ export const getEnvironment = (): EEnvironments => {
   return env;
 };
 export const envFilePath = join(__dirname, '../../');
+
+export function getCurrentTimeUTC(): string {
+  return new Date(Date.now()).toUTCString();
+}
