@@ -96,5 +96,14 @@ describe('ProductService', () => {
 
       expect(product).toEqual(productEntityStub);
     });
+    it('should throw exception ProductNotFoundException', async () => {
+      jest
+        .spyOn(productRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new ProductNotFoundException());
+
+      const product = productService.findOneOrFail('fake-user-id-uu');
+
+      expect(product).rejects.toThrowError();
+    });
   });
 });
