@@ -89,4 +89,12 @@ describe('ProductService', () => {
       expect(product).rejects.toThrowError();
     });
   });
+
+  describe('findOneOrFail', () => {
+    it('should return product', async () => {
+      const product = await productService.findOneOrFail('fake-user-id-uuid');
+
+      expect(product).toEqual(productEntityStub);
+    });
+  });
 });
