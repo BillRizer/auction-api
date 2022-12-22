@@ -116,5 +116,15 @@ describe('ProductService', () => {
       expect(productRepository.findOneOrFail).toHaveBeenCalledTimes(1);
       expect(productRepository.softDelete).toHaveBeenCalledTimes(1);
     });
+
+    it('should throw error when delete when not found', async () => {
+      jest
+        .spyOn(productRepository, 'findOneOrFail')
+        .mockRejectedValueOnce(new ProductNotFoundException());
+
+      const deleted = productRepository.softDelete('fake-uuid');
+
+      expect(deleted).rejects.toThrowError();
+    });
   });
 });
