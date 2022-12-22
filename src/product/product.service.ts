@@ -42,5 +42,8 @@ export class ProductService {
       throw new ProductNotFoundException();
     }
   }
-  async deleteById(id: string) {}
+  async deleteById(id: string) {
+    await this.findOneOrFail(id);
+    await this.productRepository.softDelete(id);
+  }
 }
