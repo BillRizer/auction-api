@@ -55,5 +55,11 @@ describe('ProductService', () => {
     });
   });
   
+  describe('findAll', () => {
+    it('should return list of products', async () => {
+      const products = await productService.findAll('fake-user-id-uuid');
 
+      expect(products).toEqual(productListEntitiesStub);
+    });
+  });
 });
