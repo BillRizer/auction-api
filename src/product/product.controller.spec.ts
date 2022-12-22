@@ -8,7 +8,12 @@ describe('ProductController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProductController],
-      providers: [ProductService],
+      providers: [
+        {
+          provide: ProductService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<ProductController>(ProductController);
@@ -17,4 +22,6 @@ describe('ProductController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
+  it('Should create new product', async () => {});
 });
