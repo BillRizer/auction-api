@@ -13,6 +13,7 @@ import { UpdateUserDto } from '../../../user/dto/update-user.dto';
 import { envFilePath } from '../../../utils/helpers';
 import { join } from 'path';
 import { userStub } from '../../../user/test/stubs/user.stub';
+import { cleanUserTable } from '../../../user/test/integration/user.controller.int-spec';
 
 describe('AuthController (integration)', () => {
   let app: INestApplication;
@@ -49,13 +50,13 @@ describe('AuthController (integration)', () => {
   });
 
   afterAll(async () => {
-    await userRepository.clear();
+    await cleanUserTable(userRepository);
     app.close();
   });
 
   describe('/auth/login [POST] (integration)', () => {
     beforeEach(async () => {
-      await userRepository.clear();
+      await cleanUserTable(userRepository);
     });
 
     it('it should receive jwt token', async () => {
