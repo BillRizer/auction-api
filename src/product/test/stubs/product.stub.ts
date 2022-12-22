@@ -1,3 +1,4 @@
+import { CreateProductDto } from '../../../product/dto/create-product.dto';
 import { ResponseCreatedProduct } from '../../../product/dto/response-created-product.dto';
 import { Product } from '../../../product/entities/product.entity';
 
@@ -30,6 +31,10 @@ export const responseCreatedProduct: ResponseCreatedProduct = {
   user_id: product.user.id,
 };
 
+export const createProductStub: CreateProductDto = {
+  ...productEntityStub,
+  user: { id: productEntityStub.id },
+};
 export const productListEntitiesStub: Array<Product> = [
   { ...productEntityStub, id: '000-0000-1', name: 'first' },
   { ...productEntityStub, id: '000-0000-2', name: 'second' },

@@ -5,6 +5,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import {
+  createProductStub,
   productEntityStub,
   productListEntitiesStub,
   responseCreatedProduct,
@@ -46,14 +47,10 @@ describe('ProductController', () => {
         const req = {
           user: { userId: 'id-mocked' },
         } as Partial<RequestWithUser>;
-        const newProduct: CreateProductDto = {
-          ...productEntityStub,
-          user: { id: productEntityStub.id },
-        };
 
         const created = await productController.create(
           req as RequestWithUser,
-          newProduct,
+          createProductStub,
         );
 
         expect(created).toEqual(responseCreatedProduct);
