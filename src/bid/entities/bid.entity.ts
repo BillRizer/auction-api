@@ -1,14 +1,9 @@
-import { Exclude } from 'class-transformer';
-import { IsNumber, IsUUID } from 'class-validator';
-import { Product } from 'src/product/entities/product.entity';
-import { User } from 'src/user/entities/user.entity';
+import { IsUUID } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
