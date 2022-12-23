@@ -7,6 +7,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
+import { BidModule } from './bid/bid.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ProductModule } from './product/product.module';
     AuthModule,
     UserModule,
     ProductModule,
+    BidModule,
   ],
   providers: [
     {
