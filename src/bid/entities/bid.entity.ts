@@ -13,7 +13,7 @@ export class Bid {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column({ nullable: false })
+  @Column('decimal', { precision: 11, scale: 2, nullable: false })
   public value: number;
 
   @IsUUID()
