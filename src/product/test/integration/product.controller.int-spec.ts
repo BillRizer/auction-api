@@ -262,6 +262,19 @@ describe('ProductController (integration)', () => {
         })
         .expect(HttpStatus.OK);
     });
+    it('should throw error when product not found', async () => {
+      await request(httpServer)
+        .delete(`/product/any-uuid-product-id`)
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .expect((response: request.Response) => {
+          expect(response.body.message).toBeDefined();
+          expect(response.body.message.length).toBeGreaterThan(5);
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+    });
   });
 });
 
