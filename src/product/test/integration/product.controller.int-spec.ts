@@ -17,7 +17,9 @@ import { userStub } from '../../../user/test/stubs/user.stub';
 import {
   createProductStub,
   responseCreatedProduct,
+  productEntityStub,
 } from '../stubs/product.stub';
+import { getUserInfo } from '../../../user/test/integration/user.controller.int-spec';
 
 describe('ProductController (integration)', () => {
   let app: INestApplication;
@@ -25,6 +27,8 @@ describe('ProductController (integration)', () => {
   let productRepository: Repository<Product>;
   let productService: ProductService;
   let userService: UserService;
+  let jwtToken = '';
+  let currentUser: { id: string };
 
   const createdUserStub: CreateUserDto = {
     email: userStub.email,
@@ -55,23 +59,26 @@ describe('ProductController (integration)', () => {
     );
     productService = app.get<ProductService>(ProductService);
     userService = app.get<UserService>(UserService);
+
+    //get jwt token
+    await userService.create(createdUserStub);
+    //TODO refactor this, duplicate code for get jwt token
+    jwtToken = await getJwtToken(
+      httpServer,
+      createdUserStub.email,
+      createdUserStub.password,
+    );
+    currentUser = await getUserInfo(httpServer, jwtToken);
   });
   it('should be defined', () => {
     expect(productRepository).toBeDefined();
     expect(productService).toBeDefined();
   });
+  it('should have jwt token', () => {
+    expect(jwtToken).toBeDefined();
+  });
 
   describe('/product [POST] (integration)', () => {
-    let jwtToken = '';
-    beforeAll(async () => {
-      await userService.create(createdUserStub);
-      //TODO refactor this, duplicate code for get jwt token
-      jwtToken = await getJwtToken(
-        httpServer,
-        createdUserStub.email,
-        createdUserStub.password,
-      );
-    });
     beforeEach(async () => {
       await cleanProductTable(productRepository);
     });
@@ -98,6 +105,7 @@ describe('ProductController (integration)', () => {
         })
         .expect(HttpStatus.CREATED);
     });
+
     it('it should throw Unauthorized error when using wrong jwt', async () => {
       const fakejwt =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZWM4OTc2MC0xOWI3LTQ0YzktOTg1OC1kMTFmMDlmNWViYTAiLCJpYXQiOjE2NzE3MzA1NDksImV4cCI6MTY3MTczNDE0OX0.GVkzILlDMgEGpHrNRDEWYhcPCLz70Rk_ws-0HyfoaNY';
@@ -110,6 +118,7 @@ describe('ProductController (integration)', () => {
         .send(createProductStub)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+
     it('it should prevent product with override in user id', async () => {
       const newProduct = {
         ...createProductStub,
@@ -126,6 +135,32 @@ describe('ProductController (integration)', () => {
           expect(response.body.user_id).not.toEqual('uuid-try-change');
         })
         .expect(HttpStatus.CREATED);
+    });
+  });
+
+  describe('/product [GET] (integration)', () => {
+    beforeEach(async () => {
+      await cleanProductTable(productRepository);
+    });
+    it('should get all products by user', async () => {
+      const product = {
+        ...createProductStub,
+        user: { id: currentUser.id },
+      };
+      await productService.create(product);
+      await productService.create(product);
+      await productService.create(product);
+
+      await request(httpServer)
+        .get('/product')
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .expect((response: request.Response) => {
+          expect(response.body.length).toEqual(3);
+        })
+        .expect(HttpStatus.OK);
     });
   });
 });

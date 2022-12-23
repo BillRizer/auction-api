@@ -45,7 +45,12 @@ export const responseUpdateProduct: ResponseUpdatedProduct = {
 };
 
 export const createProductStub: CreateProductDto = {
-  ...productEntityStub,
+  availableForAuction: productEntityStub.availableForAuction,
+  category: productEntityStub.category,
+  description: productEntityStub.description,
+  endsAt: productEntityStub.endsAt,
+  name: productEntityStub.name,
+  sold: productEntityStub.sold,
   user: { id: productEntityStub.id },
 };
 export const requestUpdateProductStub: RequestUpdateProductDto = {
