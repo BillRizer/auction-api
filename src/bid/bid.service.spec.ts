@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { Bid } from './entities/bid.entity';
+import { BidNotCreatedException } from './exceptions/bid-not-created.execption';
 import { bidEntityStub, createBidStub } from './test/stubs/bid.stub';
 
 describe('BidService', () => {
   let bidService: BidService;
+  let bidRepository: Repository<Bid>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,10 +26,12 @@ describe('BidService', () => {
     }).compile();
 
     bidService = module.get<BidService>(BidService);
+    bidRepository = module.get<Repository<Bid>>(getRepositoryToken(Bid));
   });
 
   it('should be defined', () => {
     expect(bidService).toBeDefined();
+    expect(bidRepository).toBeDefined();
   });
   describe('bidService', () => {
     it('should create new bid and return', async () => {
@@ -38,6 +43,21 @@ describe('BidService', () => {
 
       expect(created).toEqual(bidEntityStub);
     });
-   
+
+    it('should throw BidNotCreatedException when not saved', async () => {
+      jest
+        .spyOn(bidRepository, 'save')
+        .mockRejectedValueOnce(new BidNotCreatedException());
+
+      const created = bidService.create(
+        bidEntityStub.userId,
+        bidEntityStub.productId,
+        createBidStub,
+      );
+
+      expect(created).rejects.toThrowError();
+      expect(created).rejects.toBeInstanceOf(BidNotCreatedException);
+      expect(bidRepository.create).toHaveBeenCalledTimes(1);
+    });
   });
 });
