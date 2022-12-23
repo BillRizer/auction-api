@@ -33,6 +33,9 @@ describe('ProductController', () => {
             update: jest.fn(),
             findOneOrFail: jest.fn().mockResolvedValue(productEntityStub),
             deleteById: jest.fn().mockResolvedValue(undefined),
+            findAllAvaibleForAuction: jest
+              .fn()
+              .mockResolvedValue(productListEntitiesStub),
             findOneOrFailByUserID: jest
               .fn()
               .mockResolvedValue(productEntityStub),
