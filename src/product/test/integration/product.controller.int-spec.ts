@@ -110,6 +110,23 @@ describe('ProductController (integration)', () => {
         .send(createProductStub)
         .expect(HttpStatus.UNAUTHORIZED);
     });
+    it('it should prevent product with override in user id', async () => {
+      const newProduct = {
+        ...createProductStub,
+        user: { id: 'uuid-try-change' },
+      };
+      await request(httpServer)
+        .post('/product')
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .send({ ...newProduct })
+        .expect((response: request.Response) => {
+          expect(response.body.user_id).not.toEqual('uuid-try-change');
+        })
+        .expect(HttpStatus.CREATED);
+    });
   });
 });
 
