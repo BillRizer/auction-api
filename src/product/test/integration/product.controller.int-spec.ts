@@ -18,8 +18,10 @@ import {
   createProductStub,
   responseCreatedProduct,
   productEntityStub,
+  requestUpdateProductStub,
 } from '../stubs/product.stub';
 import { getUserInfo } from '../../../user/test/integration/user.controller.int-spec';
+import { RequestUpdateProductDto } from 'src/product/dto/request-update-product.dto';
 
 describe('ProductController (integration)', () => {
   let app: INestApplication;
@@ -171,6 +173,44 @@ describe('ProductController (integration)', () => {
         })
         .expect((response: request.Response) => {
           expect(response.body.length).toEqual(0);
+        })
+        .expect(HttpStatus.OK);
+    });
+  });
+
+  describe('/product/:id [PATCH] (integration)', () => {
+    beforeEach(async () => {
+      await cleanProductTable(productRepository);
+    });
+    it('should update product', async () => {
+      const productCreated = await productService.create({
+        ...createProductStub,
+        user: { id: currentUser.id },
+      });
+
+      const update: RequestUpdateProductDto = {
+        name: 'changed-name',
+        category: 'miscelaneous',
+        description: 'my neww description',
+        availableForAuction: true,
+        sold: true,
+      };
+      await request(httpServer)
+        .patch(`/product/${productCreated.id}`)
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .send(update)
+        .expect((response: request.Response) => {
+          const { availableForAuction, category, description, name, sold } =
+            response.body;
+
+          expect(availableForAuction).toEqual(update.availableForAuction);
+          expect(category).toEqual(update.category);
+          expect(description).toEqual(update.description);
+          expect(name).toEqual(update.name);
+          expect(sold).toEqual(update.sold);
         })
         .expect(HttpStatus.OK);
     });
