@@ -128,4 +128,12 @@ describe('ProductService', () => {
       expect(deleted).rejects.toThrowError();
     });
   });
+  describe('findAllAvaibleForAuction', () => {
+    it('should find all product avaible for auction', async () => {
+      const products = await productService.findAllAvaibleForAuction();
+
+      expect(products).toEqual(productListEntitiesStub);
+    });
+   
+  });
 });
