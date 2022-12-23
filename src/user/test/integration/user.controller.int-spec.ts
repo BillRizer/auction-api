@@ -228,3 +228,24 @@ describe('UserController (integration)', () => {
 export async function cleanUserTable(userRepository) {
   await userRepository.query(`TRUNCATE "user" CASCADE;`);
 }
+export async function getUserInfo(
+  httpServer,
+  jwtToken: string,
+): Promise<{ id: string }> {
+  try {
+    const user = { id: '' };
+    await request(httpServer)
+      .get('/user')
+      .set('Accept', 'application/json')
+      .set({
+        Authorization: `Bearer ${jwtToken}`,
+      })
+      .expect(HttpStatus.OK)
+      .then((response) => {
+        user.id = response.body.id;
+      });
+    return user;
+  } catch (error) {
+    return null;
+  }
+}
