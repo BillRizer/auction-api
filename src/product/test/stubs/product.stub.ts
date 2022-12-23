@@ -1,4 +1,5 @@
 import { RequestUpdateProductDto } from 'src/product/dto/request-update-product.dto';
+import { ResponseUpdatedProduct } from 'src/product/dto/response-updated-product.dto';
 import { CreateProductDto } from '../../../product/dto/create-product.dto';
 import { ResponseCreatedProduct } from '../../../product/dto/response-created-product.dto';
 import { Product } from '../../../product/entities/product.entity';
@@ -30,6 +31,17 @@ export const responseCreatedProduct: ResponseCreatedProduct = {
   createdAt: product.createdAt,
   updatedAt: product.updatedAt,
   user_id: product.user.id,
+};
+export const responseUpdateProduct: ResponseUpdatedProduct = {
+  id: product.id,
+  name: product.name,
+  description: product.description,
+  category: product.category,
+  availableForAuction: product.availableForAuction,
+  sold: product.sold,
+  endsAt: product.endsAt,
+  createdAt: product.createdAt,
+  updatedAt: product.updatedAt,
 };
 
 export const createProductStub: CreateProductDto = {

@@ -9,12 +9,13 @@ import {
   productEntityStub,
   productListEntitiesStub,
   responseCreatedProduct,
+  responseUpdateProduct,
 } from './test/stubs/product.stub';
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { ProductNotCreatedException } from './exceptions/product-not-created.exception';
 import { UnauthorizedException } from '@nestjs/common';
 import { ProductNotFoundException } from './exceptions/product-not-found.exception';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 
 describe('ProductController', () => {
   let productController: ProductController;
@@ -139,8 +140,9 @@ describe('ProductController', () => {
           updatedProductEntity,
         );
 
-        expect(updated).toEqual(updatedProductEntity);
+        expect(updated).toEqual({ ...responseUpdateProduct, name: 'updated' });
       });
+
       it('Should throw error when product not found', async () => {
         jest
           .spyOn(productService, 'findOneOrFailByUserID')
@@ -149,7 +151,7 @@ describe('ProductController', () => {
         const updated = productController.update(
           {} as RequestWithUser,
           'product-fake-uuid',
-          {} as UpdateProductDto,
+          {} as RequestUpdateProductDto,
         );
 
         expect(updated).rejects.toThrowError();

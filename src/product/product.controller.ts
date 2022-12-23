@@ -12,8 +12,6 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { Product } from './entities/product.entity';
 import { getCurrentTimeUTC } from '../utils/helpers';
 import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { RequestCreateProductDto } from './dto/request-create-product';
@@ -22,6 +20,7 @@ import { ProductNotCreatedException } from './exceptions/product-not-created.exc
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { ProductNotDeletedException } from './exceptions/product-not-deleted.exception';
+import { ResponseUpdatedProduct } from './dto/response-updated-product.dto';
 
 @Controller('product')
 @ApiTags('product')
@@ -81,8 +80,19 @@ export class ProductController {
       productId,
       userId,
     );
+    const updateProduct: RequestUpdateProductDto = {
+      category: requestUpdateProductDto.category,
+      availableForAuction: requestUpdateProductDto.availableForAuction,
+      description: requestUpdateProductDto.description,
+      name: requestUpdateProductDto.name,
+      sold: requestUpdateProductDto.sold,
+    };
+    const { user, deletedAt, ...rest } = await this.productService.update(
+      productId,
+      updateProduct,
+    );
 
-    return await this.productService.update(productId, requestUpdateProductDto);
+    return <ResponseUpdatedProduct>rest;
   }
 
   @HttpCode(200)
