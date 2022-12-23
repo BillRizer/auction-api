@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   UnauthorizedException,
+  HttpCode,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,6 +21,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ProductNotCreatedException } from './exceptions/product-not-created.exception';
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
+import { ProductNotDeletedException } from './exceptions/product-not-deleted.exception';
 
 @Controller('product')
 @ApiTags('product')
@@ -71,26 +73,40 @@ export class ProductController {
   @Patch(':id')
   async update(
     @Request() req: RequestWithUser,
-    @Param('id') id: string,
+    @Param('id') productId: string,
     @Body() requestUpdateProductDto: RequestUpdateProductDto,
   ) {
     const userId = req?.user?.userId;
-    const product = await this.productService.findOneOrFail(id);
+    const product = await this.productService.findOneOrFailByUserID(
+      productId,
+      userId,
+    );
 
-    if (!userId || product.user.id != userId) {
-      throw new UnauthorizedException();
+    return await this.productService.update(productId, requestUpdateProductDto);
+  }
+
+  @HttpCode(200)
+  @Delete(':id')
+  async delete(
+    @Request() req: RequestWithUser,
+    @Param('id') productId: string,
+  ) {
+    try {
+      //TODO refactor this for not repeat it again
+      const userId = req?.user?.userId;
+      const product = await this.productService.findOneOrFailByUserID(
+        productId,
+        userId,
+      );
+
+      await this.productService.deleteById(productId);
+    } catch (error) {
+      throw new ProductNotDeletedException();
     }
-
-    return await this.productService.update(id, requestUpdateProductDto);
   }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.productService.findOne(+id);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.productService.remove(+id);
   // }
 }

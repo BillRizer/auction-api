@@ -43,6 +43,15 @@ export class ProductService {
       throw new ProductNotFoundException();
     }
   }
+  async findOneOrFailByUserID(id: string, userId: string): Promise<Product> {
+    try {
+      return await this.productRepository.findOneOrFail({
+        where: { id: id, user: { id: userId } },
+      });
+    } catch (error) {
+      throw new ProductNotFoundException();
+    }
+  }
   async update(
     productId: string,
     requestUpdateProductDto: RequestUpdateProductDto,

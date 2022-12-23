@@ -31,6 +31,10 @@ describe('ProductController', () => {
             findAll: jest.fn().mockResolvedValue(productListEntitiesStub),
             update: jest.fn(),
             findOneOrFail: jest.fn().mockResolvedValue(productEntityStub),
+            deleteById: jest.fn().mockResolvedValue(undefined),
+            findOneOrFailByUserID: jest
+              .fn()
+              .mockResolvedValue(productEntityStub),
           },
         },
       ],
@@ -122,10 +126,9 @@ describe('ProductController', () => {
         const req = {
           user: { userId: 'user-a' },
         } as Partial<RequestWithUser>;
-        jest.spyOn(productService, 'findOneOrFail').mockResolvedValueOnce({
-          ...productEntityStub,
-          user: { id: 'user-a' },
-        });
+        jest
+          .spyOn(productService, 'findOneOrFailByUserID')
+          .mockResolvedValueOnce(productEntityStub);
         jest
           .spyOn(productService, 'update')
           .mockResolvedValueOnce(updatedProductEntity);
@@ -140,7 +143,7 @@ describe('ProductController', () => {
       });
       it('Should throw error when product not found', async () => {
         jest
-          .spyOn(productService, 'findOneOrFail')
+          .spyOn(productService, 'findOneOrFailByUserID')
           .mockRejectedValueOnce(new ProductNotFoundException());
 
         const updated = productController.update(
@@ -151,22 +154,19 @@ describe('ProductController', () => {
 
         expect(updated).rejects.toThrowError();
       });
-      it('Should throw error for unauthorized user -> product', async () => {
+    });
+
+    describe('delete', () => {
+      it('should delete product', async () => {
         const req = {
           user: { userId: 'user-a' },
         } as Partial<RequestWithUser>;
-        jest.spyOn(productService, 'findOneOrFail').mockResolvedValueOnce({
-          ...productEntityStub,
-          user: { id: 'user-b' },
-        });
-
-        const updated = productController.update(
+        const deleted = await productController.delete(
           req as RequestWithUser,
-          'product-fake-uuid',
-          {} as UpdateProductDto,
+          'product-uuid',
         );
 
-        expect(updated).rejects.toThrowError();
+        expect(deleted).toBeUndefined();
       });
     });
   });
