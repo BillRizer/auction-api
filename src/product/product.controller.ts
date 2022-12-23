@@ -21,6 +21,7 @@ import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { ProductNotDeletedException } from './exceptions/product-not-deleted.exception';
 import { ResponseUpdatedProduct } from './dto/response-updated-product.dto';
+import { Public } from '../auth/decorator/public.decorator';
 
 @Controller('product')
 @ApiTags('product')
@@ -115,6 +116,10 @@ export class ProductController {
     }
   }
 
+  @Get('avaible-for-auction')
+  async findAllAvaibleForAuction() {
+    return await this.productService.findAllAvaibleForAuction();
+  }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.productService.findOne(+id);
