@@ -27,6 +27,8 @@ describe('ProductController', () => {
           useValue: {
             create: jest.fn().mockResolvedValue(productEntityStub),
             findAll: jest.fn().mockResolvedValue(productListEntitiesStub),
+            update: jest.fn(),
+            findOneOrFail: jest.fn().mockResolvedValue(productEntityStub),
           },
         },
       ],
@@ -109,6 +111,29 @@ describe('ProductController', () => {
         const products = productController.findAll({} as RequestWithUser);
 
         expect(products).rejects.toThrowError();
+      });
+    });
+
+    describe('update', () => {
+      it('Should update product', async () => {
+        const updatedProductEntity = { ...productEntityStub, name: 'updated' };
+        const req = {
+          user: { userId: 'user-a' },
+        } as Partial<RequestWithUser>;
+        jest
+          .spyOn(productService, 'findOneOrFail')
+          .mockResolvedValue({ ...productEntityStub, user: { id: 'user-a' } });
+        jest
+          .spyOn(productService, 'update')
+          .mockResolvedValue(updatedProductEntity);
+
+        const updated = await productController.update(
+          req as RequestWithUser,
+          'product-fake-uuid',
+          updatedProductEntity,
+        );
+
+        expect(updated).toEqual(updatedProductEntity);
       });
     });
   });
