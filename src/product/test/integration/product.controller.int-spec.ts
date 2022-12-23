@@ -162,6 +162,18 @@ describe('ProductController (integration)', () => {
         })
         .expect(HttpStatus.OK);
     });
+    it('should get empty array products by user', async () => {
+      await request(httpServer)
+        .get('/product')
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .expect((response: request.Response) => {
+          expect(response.body.length).toEqual(0);
+        })
+        .expect(HttpStatus.OK);
+    });
   });
 });
 
