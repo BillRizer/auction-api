@@ -12,6 +12,7 @@ const bid = new Bid({
 });
 
 export const bidEntityStub = bid;
+export const bidListEntityStub = [bid, bid, bid, bid];
 
 export const createBidStub: CreateBidDto = {
   value: bid.value,
