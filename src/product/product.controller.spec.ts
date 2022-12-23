@@ -183,5 +183,11 @@ describe('ProductController', () => {
         expect(deleted).rejects.toThrowError();
       });
     });
+    describe('avaible-for-auction', () => {
+      it('should get all products avaible for auction', async () => {
+        const products = await productController.findAllAvaibleForAuction();
+        expect(products).toEqual(productListEntitiesStub);
+      });
+    });
   });
 });
