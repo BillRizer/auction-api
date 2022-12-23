@@ -182,7 +182,7 @@ describe('ProductController (integration)', () => {
     beforeEach(async () => {
       await cleanProductTable(productRepository);
     });
-    it('should update product', async () => {
+    it('should update full product', async () => {
       const productCreated = await productService.create({
         ...createProductStub,
         user: { id: currentUser.id },
@@ -211,6 +211,54 @@ describe('ProductController (integration)', () => {
           expect(description).toEqual(update.description);
           expect(name).toEqual(update.name);
           expect(sold).toEqual(update.sold);
+        })
+        .expect(HttpStatus.OK);
+    });
+    it('should update partial product', async () => {
+      const productCreated = await productService.create({
+        ...createProductStub,
+        user: { id: currentUser.id },
+      });
+
+      const update: RequestUpdateProductDto = {
+        name: 'changed-name',
+        availableForAuction: true,
+      };
+      await request(httpServer)
+        .patch(`/product/${productCreated.id}`)
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
+        })
+        .send(update)
+        .expect((response: request.Response) => {
+          const { availableForAuction, category, description, name, sold } =
+            response.body;
+
+          expect(availableForAuction).toEqual(update.availableForAuction);
+          expect(category).toEqual(productCreated.category);
+          expect(description).toEqual(productCreated.description);
+          expect(name).toEqual(update.name);
+          expect(sold).toEqual(productCreated.sold);
+        })
+        .expect(HttpStatus.OK);
+    });
+  });
+
+  describe('/product/:id [DELETE] (integration)', () => {
+    beforeEach(async () => {
+      await cleanProductTable(productRepository);
+    });
+    it('should delete product', async () => {
+      const productCreated = await productService.create({
+        ...createProductStub,
+        user: { id: currentUser.id },
+      });
+      await request(httpServer)
+        .delete(`/product/${productCreated.id}`)
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${jwtToken}`,
         })
         .expect(HttpStatus.OK);
     });
