@@ -134,6 +134,12 @@ describe('ProductService', () => {
 
       expect(products).toEqual(productListEntitiesStub);
     });
-   
+    it('should return empty list', async () => {
+      jest.spyOn(productRepository, 'find').mockResolvedValueOnce([]);
+
+      const products = await productService.findAllAvaibleForAuction();
+
+      expect(products).toEqual([]);
+    });
   });
 });
