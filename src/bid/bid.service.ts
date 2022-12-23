@@ -25,7 +25,9 @@ export class BidService {
     }
   }
 
-  findAll() {
-    return `This action returns all bid`;
+  async findAllByProductId(productId: string) {
+    return await this.bidRepository.find({
+      where: { productId: productId },
+    });
   }
 }

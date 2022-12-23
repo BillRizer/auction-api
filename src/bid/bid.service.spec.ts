@@ -65,6 +65,7 @@ describe('BidService', () => {
       expect(bidRepository.create).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('findAll', () => {
     it('should return a list of bids by productId', async () => {
       const bids = await bidService.findAllByProductId('product-id-uuid');
