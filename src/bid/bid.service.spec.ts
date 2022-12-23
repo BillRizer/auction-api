@@ -5,7 +5,11 @@ import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { Bid } from './entities/bid.entity';
 import { BidNotCreatedException } from './exceptions/bid-not-created.execption';
-import { bidEntityStub, createBidStub } from './test/stubs/bid.stub';
+import {
+  bidEntityStub,
+  bidListEntityStub,
+  createBidStub,
+} from './test/stubs/bid.stub';
 
 describe('BidService', () => {
   let bidService: BidService;
@@ -20,6 +24,7 @@ describe('BidService', () => {
           useValue: {
             create: jest.fn(),
             save: jest.fn().mockResolvedValue(bidEntityStub),
+            find: jest.fn().mockResolvedValue(bidListEntityStub),
           },
         },
       ],
@@ -33,7 +38,7 @@ describe('BidService', () => {
     expect(bidService).toBeDefined();
     expect(bidRepository).toBeDefined();
   });
-  describe('bidService', () => {
+  describe('create', () => {
     it('should create new bid and return', async () => {
       const created = await bidService.create(
         bidEntityStub.userId,
@@ -58,6 +63,13 @@ describe('BidService', () => {
       expect(created).rejects.toThrowError();
       expect(created).rejects.toBeInstanceOf(BidNotCreatedException);
       expect(bidRepository.create).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('findAll', () => {
+    it('should return a list of bids by productId', async () => {
+      const bids = await bidService.findAllByProductId('product-id-uuid');
+
+      expect(bids.length).toEqual(4);
     });
   });
 });
