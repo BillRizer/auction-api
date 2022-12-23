@@ -13,6 +13,8 @@ import {
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { ProductNotCreatedException } from './exceptions/product-not-created.exception';
 import { UnauthorizedException } from '@nestjs/common';
+import { ProductNotFoundException } from './exceptions/product-not-found.exception';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 describe('ProductController', () => {
   let productController: ProductController;
@@ -120,12 +122,13 @@ describe('ProductController', () => {
         const req = {
           user: { userId: 'user-a' },
         } as Partial<RequestWithUser>;
-        jest
-          .spyOn(productService, 'findOneOrFail')
-          .mockResolvedValue({ ...productEntityStub, user: { id: 'user-a' } });
+        jest.spyOn(productService, 'findOneOrFail').mockResolvedValueOnce({
+          ...productEntityStub,
+          user: { id: 'user-a' },
+        });
         jest
           .spyOn(productService, 'update')
-          .mockResolvedValue(updatedProductEntity);
+          .mockResolvedValueOnce(updatedProductEntity);
 
         const updated = await productController.update(
           req as RequestWithUser,
@@ -134,6 +137,19 @@ describe('ProductController', () => {
         );
 
         expect(updated).toEqual(updatedProductEntity);
+      });
+      it('Should throw error when product not found', async () => {
+        jest
+          .spyOn(productService, 'findOneOrFail')
+          .mockRejectedValueOnce(new ProductNotFoundException());
+
+        const updated = productController.update(
+          {} as RequestWithUser,
+          'product-fake-uuid',
+          {} as UpdateProductDto,
+        );
+
+        expect(updated).rejects.toThrowError();
       });
     });
   });
