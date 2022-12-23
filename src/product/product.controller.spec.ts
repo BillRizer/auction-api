@@ -151,6 +151,23 @@ describe('ProductController', () => {
 
         expect(updated).rejects.toThrowError();
       });
+      it('Should throw error for unauthorized user -> product', async () => {
+        const req = {
+          user: { userId: 'user-a' },
+        } as Partial<RequestWithUser>;
+        jest.spyOn(productService, 'findOneOrFail').mockResolvedValueOnce({
+          ...productEntityStub,
+          user: { id: 'user-b' },
+        });
+
+        const updated = productController.update(
+          req as RequestWithUser,
+          'product-fake-uuid',
+          {} as UpdateProductDto,
+        );
+
+        expect(updated).rejects.toThrowError();
+      });
     });
   });
 });
