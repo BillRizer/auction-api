@@ -98,6 +98,18 @@ describe('ProductController (integration)', () => {
         })
         .expect(HttpStatus.CREATED);
     });
+    it('it should throw Unauthorized error when using wrong jwt', async () => {
+      const fakejwt =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlZWM4OTc2MC0xOWI3LTQ0YzktOTg1OC1kMTFmMDlmNWViYTAiLCJpYXQiOjE2NzE3MzA1NDksImV4cCI6MTY3MTczNDE0OX0.GVkzILlDMgEGpHrNRDEWYhcPCLz70Rk_ws-0HyfoaNY';
+      await request(httpServer)
+        .post('/product')
+        .set('Accept', 'application/json')
+        .set({
+          Authorization: `Bearer ${fakejwt}`,
+        })
+        .send(createProductStub)
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
   });
 });
 
