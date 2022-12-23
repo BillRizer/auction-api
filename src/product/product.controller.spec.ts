@@ -168,6 +168,18 @@ describe('ProductController', () => {
 
         expect(deleted).toBeUndefined();
       });
+      it('should throw ProductNotDeletedException when not found', async () => {
+        jest
+          .spyOn(productService, 'findOneOrFailByUserID')
+          .mockRejectedValueOnce(new ProductNotFoundException());
+
+        const deleted = productController.delete(
+          {} as RequestWithUser,
+          'product-uuid',
+        );
+
+        expect(deleted).rejects.toThrowError();
+      });
     });
   });
 });
