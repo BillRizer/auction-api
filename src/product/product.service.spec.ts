@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductNotFoundException } from './exceptions/product-not-found.exception';
 import { ProductService } from './product.service';
@@ -8,6 +9,7 @@ import {
   createProductStub,
   productEntityStub,
   productListEntitiesStub,
+  requestUpdateProductStub,
 } from './test/stubs/product.stub';
 
 describe('ProductService', () => {
@@ -119,8 +121,8 @@ describe('ProductService', () => {
 
     it('should throw error when delete when not found', async () => {
       jest
-        .spyOn(productRepository, 'findOneOrFail')
-        .mockRejectedValueOnce(new ProductNotFoundException());
+        .spyOn(productRepository, 'softDelete')
+        .mockRejectedValueOnce(new Error());
 
       const deleted = productRepository.softDelete('fake-uuid');
 

@@ -19,6 +19,7 @@ import { RequestCreateProductDto } from './dto/request-create-product';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductNotCreatedException } from './exceptions/product-not-created.exception';
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
+import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 
 @Controller('product')
 @ApiTags('product')
@@ -59,22 +60,33 @@ export class ProductController {
   }
 
   @Get()
-  findAll(@Request() req: RequestWithUser) {
+  async findAll(@Request() req: RequestWithUser) {
     const userId = req?.user?.userId;
     if (!userId) {
       throw new UnauthorizedException();
     }
-    return this.productService.findAll(userId);
+    return await this.productService.findAll(userId);
+  }
+
+  @Patch(':id')
+  async update(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() requestUpdateProductDto: RequestUpdateProductDto,
+  ) {
+    const userId = req?.user?.userId;
+    const product = await this.productService.findOneOrFail(id);
+
+    if (!userId || product.user.id != userId) {
+      throw new UnauthorizedException();
+    }
+
+    return await this.productService.update(id, requestUpdateProductDto);
   }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.productService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-  //   return this.productService.update(+id, updateProductDto);
   // }
 
   // @Delete(':id')
