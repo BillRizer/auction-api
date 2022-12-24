@@ -11,15 +11,20 @@ import {
   HttpCode,
   HttpException,
 } from '@nestjs/common';
-import RequestWithUser from 'src/auth/interface/request-with-user.interface';
+import { getCurrentTimeUTC } from '../utils/time';
+import RequestWithUser from '../auth/interface/request-with-user.interface';
+import { ProductService } from '../product/product.service';
 import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { BidLowerException } from './exceptions/bid-lower.execption';
-import { BidNotCreatedException } from './exceptions/bid-not-created.execption';
+import { BidTimeoutException } from './exceptions/bid-timeout.execption';
 
 @Controller('bid')
 export class BidController {
-  constructor(private readonly bidService: BidService) {}
+  constructor(
+    private readonly bidService: BidService,
+    private productService: ProductService,
+  ) {}
 
   @Post(':id')
   @HttpCode(201)
@@ -29,14 +34,17 @@ export class BidController {
     @Body() createBidDto: CreateBidDto,
   ) {
     const userId = req?.user?.userId;
+    const product = await this.productService.findOneOrFail(productId);
 
+    if (new Date(getCurrentTimeUTC()) > new Date(product.endsAt)) {
+      throw new BidTimeoutException();
+    }
     const lastBid = await this.bidService.findLastOneByProductId(productId);
     if (lastBid) {
       if (createBidDto.value <= lastBid.value) {
         throw new BidLowerException(lastBid.value);
       }
     }
-
     await this.bidService.create(userId, productId, createBidDto);
   }
 

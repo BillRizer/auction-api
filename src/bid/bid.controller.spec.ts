@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ProductService } from '../product/product.service';
 import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { BidController } from './bid.controller';
 import { BidService } from './bid.service';
@@ -9,10 +10,13 @@ import {
   bidListEntityStub,
   createBidStub,
 } from './test/stubs/bid.stub';
+import { productEntityStub } from '../product/test/stubs/product.stub';
+import { ProductNotFoundException } from '../product/exceptions/product-not-found.exception';
 
 describe('BidController', () => {
   let bidController: BidController;
   let bidService: BidService;
+  let productService: ProductService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,11 +30,18 @@ describe('BidController', () => {
             findLastOneByProductId: jest.fn().mockResolvedValue(bidEntityStub),
           },
         },
+        {
+          provide: ProductService,
+          useValue: {
+            findOneOrFail: jest.fn().mockResolvedValueOnce(productEntityStub),
+          },
+        },
       ],
     }).compile();
 
     bidController = module.get<BidController>(BidController);
     bidService = module.get<BidService>(BidService);
+    productService = module.get<ProductService>(ProductService);
   });
 
   it('should be defined', () => {
@@ -53,6 +64,20 @@ describe('BidController', () => {
       expect(created).toBeUndefined();
       expect(bidService.create).toHaveBeenCalledTimes(1);
       expect(created).resolves;
+    });
+
+    it('should prevent create bid than productId not found', async () => {
+      jest
+        .spyOn(productService, 'findOneOrFail')
+        .mockRejectedValueOnce(new ProductNotFoundException());
+
+      const created = bidController.create(
+        {} as RequestWithUser,
+        'uuid',
+        createBidStub,
+      );
+
+      expect(created).rejects.toThrowError();
     });
 
     it('should prevent create bid with lower value than the current one', async () => {
