@@ -35,8 +35,8 @@ export function CalculateDate(date: Date, dateTime: string) {
   return date;
 }
 
-export function getCurrentTimeUTC(): string {
-  return new Date(Date.now()).toUTCString();
+export function getCurrentTimeISO(): string {
+  return new Date(Date.now()).toISOString();
 }
 
 // used in product.ends_at

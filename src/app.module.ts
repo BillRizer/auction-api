@@ -8,6 +8,7 @@ import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { BidModule } from './bid/bid.module';
+import { AuctioneerModule } from './auctioneer/auctioneer.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BidModule } from './bid/bid.module';
     UserModule,
     ProductModule,
     BidModule,
+    AuctioneerModule,
   ],
   providers: [
     {
