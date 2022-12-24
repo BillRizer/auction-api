@@ -11,7 +11,7 @@ import {
   HttpCode,
   HttpException,
 } from '@nestjs/common';
-import { getCurrentTimeUTC } from '../utils/time';
+import { getCurrentTimeISO } from '../utils/time';
 import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { ProductService } from '../product/product.service';
 import { BidService } from './bid.service';
@@ -36,7 +36,7 @@ export class BidController {
     const userId = req?.user?.userId;
     const product = await this.productService.findOneOrFail(productId);
 
-    if (new Date(getCurrentTimeUTC()) > new Date(product.endsAt)) {
+    if (new Date(getCurrentTimeISO()) > new Date(product.endsAt)) {
       throw new BidTimeoutException();
     }
     const lastBid = await this.bidService.findLastOneByProductId(productId);

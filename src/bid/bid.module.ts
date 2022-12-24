@@ -10,5 +10,6 @@ import { ProductModule } from '../product/product.module';
   imports: [ProductModule, TypeOrmModule.forFeature([Bid, Product])],
   controllers: [BidController],
   providers: [BidService],
+  exports: [BidService],
 })
 export class BidModule {}

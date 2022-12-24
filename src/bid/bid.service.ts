@@ -28,14 +28,14 @@ export class BidService {
   async findAllByProductId(productId: string) {
     return await this.bidRepository.find({
       where: { productId: productId },
-      order: { createdAt: 'DESC' },
+      order: { value: 'DESC' },
     });
   }
 
   async findLastOneByProductId(productId: string): Promise<Bid> {
     return await this.bidRepository.findOne({
       where: { productId: productId },
-      order: { createdAt: 'DESC' },
+      order: { value: 'DESC' },
     });
   }
 }
