@@ -83,7 +83,7 @@ describe('BidController', () => {
   });
 
   describe('findAllByProductId', () => {
-    it('should get all products avaibles for auction', async () => {
+    it('should get all products availables for auction', async () => {
       const products = await bidController.findAllByProductId('product-uuid');
 
       expect(products).toEqual(bidListEntityStub);

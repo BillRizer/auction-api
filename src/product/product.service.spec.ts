@@ -128,16 +128,16 @@ describe('ProductService', () => {
       expect(deleted).rejects.toThrowError();
     });
   });
-  describe('findAllAvaibleForAuction', () => {
-    it('should find all product avaible for auction', async () => {
-      const products = await productService.findAllAvaibleForAuction();
+  describe('findAllAvailableForAuction', () => {
+    it('should find all product available for auction', async () => {
+      const products = await productService.findAllAvailableForAuction();
 
       expect(products).toEqual(productListEntitiesStub);
     });
     it('should return empty list', async () => {
       jest.spyOn(productRepository, 'find').mockResolvedValueOnce([]);
 
-      const products = await productService.findAllAvaibleForAuction();
+      const products = await productService.findAllAvailableForAuction();
 
       expect(products).toEqual([]);
     });

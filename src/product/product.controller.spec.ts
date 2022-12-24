@@ -33,7 +33,7 @@ describe('ProductController', () => {
             update: jest.fn(),
             findOneOrFail: jest.fn().mockResolvedValue(productEntityStub),
             deleteById: jest.fn().mockResolvedValue(undefined),
-            findAllAvaibleForAuction: jest
+            findAllAvailableForAuction: jest
               .fn()
               .mockResolvedValue(productListEntitiesStub),
             findOneOrFailByUserID: jest
@@ -186,9 +186,9 @@ describe('ProductController', () => {
         expect(deleted).rejects.toThrowError();
       });
     });
-    describe('avaible-for-auction', () => {
-      it('should get all products avaible for auction', async () => {
-        const products = await productController.findAllAvaibleForAuction();
+    describe('available-for-auction', () => {
+      it('should get all products available for auction', async () => {
+        const products = await productController.findAllAvailableForAuction();
         expect(products).toEqual(productListEntitiesStub);
       });
     });

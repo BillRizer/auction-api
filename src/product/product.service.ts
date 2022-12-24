@@ -69,7 +69,7 @@ export class ProductService {
     await this.productRepository.softDelete(id);
   }
 
-  async findAllAvaibleForAuction() {
+  async findAllAvailableForAuction() {
     return await this.productRepository.find({
       where: { availableForAuction: true, sold: false },
     });

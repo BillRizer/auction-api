@@ -116,9 +116,9 @@ export class ProductController {
     }
   }
 
-  @Get('avaible-for-auction')
-  async findAllAvaibleForAuction() {
-    return await this.productService.findAllAvaibleForAuction();
+  @Get('available-for-auction')
+  async findAllAvailableForAuction() {
+    return await this.productService.findAllAvailableForAuction();
   }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
