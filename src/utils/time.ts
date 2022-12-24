@@ -39,10 +39,13 @@ export function getCurrentTimeUTC(): string {
   return new Date(Date.now()).toUTCString();
 }
 
-//calc how long will the auction be available
-// export function calcLimitAuctionTime() {}
-
 // used in product.ends_at
+//calc how long will the auction be available
+export function calcLimitAuctionTime(): string {
+  const now = getCurrentDateTimeUTCWithoutSec();
+  return CalculateDate(new Date(now), '+1hour').toISOString();
+}
+
 // because I don't want the seconds
 export function getCurrentDateTimeUTCWithoutSec(): string {
   const time = new Date(Date.now()).setSeconds(0);

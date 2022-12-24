@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import RequestWithUser from 'src/auth/interface/request-with-user.interface';
+import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { BidController } from './bid.controller';
 import { BidService } from './bid.service';
 import { Bid } from './entities/bid.entity';

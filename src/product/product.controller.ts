@@ -21,7 +21,7 @@ import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { ProductNotDeletedException } from './exceptions/product-not-deleted.exception';
 import { ResponseUpdatedProduct } from './dto/response-updated-product.dto';
 import { Public } from '../auth/decorator/public.decorator';
-import { getCurrentDateTimeUTCWithoutSec } from 'src/utils/time';
+import { calcLimitAuctionTime } from 'src/utils/time';
 
 @Controller('product')
 @ApiTags('product')
@@ -44,7 +44,7 @@ export class ProductController {
         description: requestCreateProductDto.description,
         name: requestCreateProductDto.name,
         availableForAuction: false,
-        endsAt: getCurrentDateTimeUTCWithoutSec(),
+        endsAt: calcLimitAuctionTime(),
         sold: false,
         user: { id: id },
       };
