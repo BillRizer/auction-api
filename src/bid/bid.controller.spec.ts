@@ -23,6 +23,7 @@ describe('BidController', () => {
           useValue: {
             create: jest.fn().mockResolvedValue(bidEntityStub),
             findAllByProductId: jest.fn().mockResolvedValue(bidListEntityStub),
+            findLastOneByProductId: jest.fn().mockResolvedValue(bidEntityStub),
           },
         },
       ],
@@ -39,14 +40,31 @@ describe('BidController', () => {
 
   describe('create', () => {
     it('should create new bid for product', async () => {
+      jest
+        .spyOn(bidService, 'findLastOneByProductId')
+        .mockResolvedValueOnce(bidEntityStub);
+
       const created = await bidController.create(
         {} as RequestWithUser,
         'uuid',
-        createBidStub,
+        { ...createBidStub, value: bidEntityStub.value + 1 },
       );
+
       expect(created).toBeUndefined();
       expect(bidService.create).toHaveBeenCalledTimes(1);
       expect(created).resolves;
+    });
+
+    it('should prevent create bid with lower value than the current one', async () => {
+      jest
+        .spyOn(bidService, 'findLastOneByProductId')
+        .mockResolvedValueOnce(bidEntityStub);
+
+      const created = bidController.create({} as RequestWithUser, 'uuid', {
+        ...createBidStub,
+      });
+
+      expect(created).rejects.toThrowError();
     });
 
     it('should throw error BidNotCreatedException', async () => {
