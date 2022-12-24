@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getCurrentTimeISO } from 'src/utils/time';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -73,6 +74,16 @@ export class ProductService {
   async findAllAvailableForAuction() {
     return await this.productRepository.find({
       where: { availableForAuction: true, sold: false },
+    });
+  }
+  async findAllAvailableForAuctionEnded() {
+    console.log(getCurrentTimeISO());
+    return await this.productRepository.find({
+      where: {
+        availableForAuction: true,
+        sold: false,
+        endsAt: LessThan(getCurrentTimeISO()),
+      },
     });
   }
 }
