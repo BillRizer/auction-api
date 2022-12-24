@@ -24,6 +24,7 @@ describe('BidService', () => {
           useValue: {
             create: jest.fn(),
             save: jest.fn().mockResolvedValue(bidEntityStub),
+            findOne: jest.fn().mockResolvedValue(bidEntityStub),
             find: jest.fn().mockResolvedValue(bidListEntityStub),
           },
         },
@@ -38,6 +39,7 @@ describe('BidService', () => {
     expect(bidService).toBeDefined();
     expect(bidRepository).toBeDefined();
   });
+
   describe('create', () => {
     it('should create new bid and return', async () => {
       const created = await bidService.create(
@@ -71,6 +73,23 @@ describe('BidService', () => {
       const bids = await bidService.findAllByProductId('product-id-uuid');
 
       expect(bids.length).toEqual(4);
+    });
+  });
+
+  describe('findLastOneByProductId', () => {
+    it('should get last object', async () => {
+      const bid = await bidService.findLastOneByProductId('');
+
+      expect(bid).toBeDefined();
+      expect(bid).toEqual(bidEntityStub);
+    });
+    it('should get last object', async () => {
+      jest.spyOn(bidService, 'findLastOneByProductId').mockResolvedValue(null);
+
+      const bid = await bidService.findLastOneByProductId('');
+
+      expect(bid).toEqual(null);
+      expect(bidService.findLastOneByProductId).toHaveBeenCalledTimes(1);
     });
   });
 });

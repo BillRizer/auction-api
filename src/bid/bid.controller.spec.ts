@@ -70,6 +70,7 @@ describe('BidController', () => {
 
       expect(products).toEqual(bidListEntityStub);
     });
+
     it('should get empty when not exist product for id', async () => {
       jest.spyOn(bidService, 'findAllByProductId').mockResolvedValueOnce([]);
 

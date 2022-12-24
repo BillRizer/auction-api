@@ -30,4 +30,11 @@ export class BidService {
       where: { productId: productId },
     });
   }
+
+  async findLastOneByProductId(productId: string): Promise<Bid> {
+    return await this.bidRepository.findOne({
+      where: { productId: productId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
