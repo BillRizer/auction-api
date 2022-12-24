@@ -22,6 +22,7 @@ describe('BidController', () => {
           provide: BidService,
           useValue: {
             create: jest.fn().mockResolvedValue(bidEntityStub),
+            findAllByProductId: jest.fn().mockResolvedValue(bidListEntityStub),
           },
         },
       ],
@@ -63,5 +64,20 @@ describe('BidController', () => {
     });
   });
 
+  describe('findAllByProductId', () => {
+    it('should get all products avaibles for auction', async () => {
+      const products = await bidController.findAllByProductId('product-uuid');
 
+      expect(products).toEqual(bidListEntityStub);
+    });
+    it('should get empty when not exist product for id', async () => {
+      jest.spyOn(bidService, 'findAllByProductId').mockResolvedValueOnce([]);
+
+      const products = await bidController.findAllByProductId('product-uuid');
+
+      expect(products).toEqual([]);
+      expect(products.length).toEqual(0);
+      expect(bidService.findAllByProductId).toHaveBeenCalledTimes(1);
+    });
+  });
 });
