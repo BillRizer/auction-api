@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { getCurrentTimeUTC } from '../utils/helpers';
 import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { RequestCreateProductDto } from './dto/request-create-product';
 import { ApiTags } from '@nestjs/swagger';
@@ -22,6 +21,7 @@ import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { ProductNotDeletedException } from './exceptions/product-not-deleted.exception';
 import { ResponseUpdatedProduct } from './dto/response-updated-product.dto';
 import { Public } from '../auth/decorator/public.decorator';
+import { getCurrentDateTimeUTCWithoutSec } from 'src/utils/time';
 
 @Controller('product')
 @ApiTags('product')
@@ -44,7 +44,7 @@ export class ProductController {
         description: requestCreateProductDto.description,
         name: requestCreateProductDto.name,
         availableForAuction: false,
-        endsAt: getCurrentTimeUTC(),
+        endsAt: getCurrentDateTimeUTCWithoutSec(),
         sold: false,
         user: { id: id },
       };

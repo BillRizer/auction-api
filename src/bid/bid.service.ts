@@ -28,6 +28,7 @@ export class BidService {
   async findAllByProductId(productId: string) {
     return await this.bidRepository.find({
       where: { productId: productId },
+      order: { createdAt: 'DESC' },
     });
   }
 
