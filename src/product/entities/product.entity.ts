@@ -34,7 +34,7 @@ export class Product {
   public sold: boolean;
 
   @IsDate()
-  @Column({ name: 'ends_at' })
+  @Column({ name: 'ends_at', nullable: true })
   public endsAt: string;
 
   @CreateDateColumn({ name: 'created_at' })

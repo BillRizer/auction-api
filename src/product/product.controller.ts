@@ -21,7 +21,9 @@ import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { ProductNotDeletedException } from './exceptions/product-not-deleted.exception';
 import { ResponseUpdatedProduct } from './dto/response-updated-product.dto';
 import { Public } from '../auth/decorator/public.decorator';
-import { calcLimitAuctionTime } from 'src/utils/time';
+import { calcLimitAuctionTime } from '../utils/time';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { AvailableForAuctionAlreadySetted } from './exceptions/available-for-auction-already-setted';
 
 @Controller('product')
 @ApiTags('product')
@@ -44,7 +46,7 @@ export class ProductController {
         description: requestCreateProductDto.description,
         name: requestCreateProductDto.name,
         availableForAuction: false,
-        endsAt: calcLimitAuctionTime(),
+        endsAt: null,
         sold: false,
         user: { id: id },
       };
@@ -114,6 +116,27 @@ export class ProductController {
     } catch (error) {
       throw new ProductNotDeletedException();
     }
+  }
+
+  @HttpCode(200)
+  @Get('available-for-auction/:id')
+  async setAvailableForAuction(
+    @Request() req: RequestWithUser,
+    @Param('id') productId: string,
+  ) {
+    const userId = req?.user?.userId;
+    const product = await this.productService.findOneOrFailByUserID(
+      productId,
+      userId,
+    );
+    if (product.availableForAuction) {
+      throw new AvailableForAuctionAlreadySetted();
+    }
+    const update: UpdateProductDto = {
+      availableForAuction: true,
+      endsAt: calcLimitAuctionTime(),
+    };
+    await this.productService.update(productId, update);
   }
 
   @Get('available-for-auction')

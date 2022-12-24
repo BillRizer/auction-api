@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductNotFoundException } from './exceptions/product-not-found.exception';
 
@@ -53,7 +54,7 @@ export class ProductService {
   }
   async update(
     productId: string,
-    requestUpdateProductDto: RequestUpdateProductDto,
+    requestUpdateProductDto: RequestUpdateProductDto | UpdateProductDto,
   ): Promise<Product> {
     try {
       const product = await this.findOneOrFail(productId);
