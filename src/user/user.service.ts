@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailAlreadyExistException } from '../common/exceptions/email-already-exists.exception';
+import { UserNotHaveAmountException } from './exceptions/user-not-have-amount.exception';
 
 @Injectable()
 export class UserService {
@@ -80,9 +81,65 @@ export class UserService {
       throw new NotFoundException('Could not update');
     }
   }
+  async addCredit(userId: string, credit: number) {
+    try {
+      await this.userRepository.update(
+        { id: userId },
+        { credit: () => `credit + ${credit}` },
+      );
+    } catch (error) {
+      throw new NotFoundException('Could not add credit');
+    }
+  }
+  async removeCredit(userId: string, credit: number) {
+    try {
+      const user = await this.findOneOrFail(userId);
+      if (user.credit < credit) {
+        throw new UserNotHaveAmountException(credit);
+      }
+      await this.userRepository.update(
+        { id: userId },
+        { credit: () => `credit - ${credit}` },
+      );
+    } catch (error) {
+      throw new NotFoundException('Could not remove credit');
+    }
+  }
+  async updateCredit(userId: string, credit: number) {
+    try {
+      await this.userRepository.update({ id: userId }, { credit: credit });
+    } catch (error) {
+      throw new NotFoundException('Could not update credit');
+    }
+  }
 
   async deleteById(id: string) {
     await this.findOneOrFail(id);
     await this.userRepository.softDelete(id);
+  }
+
+  async transactionCredit(
+    userIdSend: string,
+    userIdReceive: string,
+    money: number,
+  ): Promise<boolean> {
+    const userSend = await this.findOneOrFail(userIdSend);
+    const userReceive = await this.findOneOrFail(userIdReceive);
+
+    if (userSend.credit < money) {
+      throw new UserNotHaveAmountException(money);
+    }
+
+    try {
+      await this.removeCredit(userIdSend, money);
+      await this.addCredit(userIdReceive, money);
+      return true;
+    } catch (error) {
+      console.log(error);
+      await this.updateCredit(userIdSend, userSend.credit);
+      await this.updateCredit(userIdReceive, userReceive.credit);
+      console.log('rollback transaction success');
+      return false;
+    }
   }
 }
