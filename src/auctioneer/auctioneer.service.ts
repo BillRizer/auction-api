@@ -4,6 +4,7 @@ import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
+import { UserNotHaveAmountException } from 'src/user/exceptions/user-not-have-amount.exception';
 
 @Injectable()
 export class Auctioneer {
@@ -30,6 +31,7 @@ export class AuctioneerSingleton {
   ) {
     this.productService = productService;
     this.bidService = bidService;
+    this.userService = userService;
   }
 
   public static getInstance(
@@ -54,5 +56,66 @@ export class AuctioneerSingleton {
       AuctioneerSingleton.main();
     }, +process.env.AUCTIONEER_FREQUENCY_INTERVAL_MS || 3000);
   }
-  private static async main() {}
+  private static async main() {
+    const products =
+      await this.instance.productService.findAllAvailableForAuctionEnded();
+    if (products.length === 0) {
+      console.log('dont have products');
+      return;
+    }
+
+    for (const product of products) {
+      console.log('>', product.name);
+      const bids = await this.instance.bidService.findAllByProductId(
+        product.id,
+      );
+      if (bids.length == 0) {
+        await this.instance.productService.update(product.id, {
+          availableForAuction: false,
+        });
+        console.log('dont have bids', product.id);
+        continue;
+      }
+
+      const usersNotEnoughCreditList = [];
+      for (const bid of bids) {
+        const userIdSend = bid.userId;
+        const userIdReceive = product.user.id;
+        const money = bid.value;
+
+        if (usersNotEnoughCreditList.includes(userIdSend)) {
+          console.log(
+            'user exist in blacklist (not enough credit)',
+            userIdSend,
+          );
+          continue;
+        }
+        try {
+          const transfered = await this.instance.userService.transactionCredit(
+            userIdSend,
+            userIdReceive,
+            money,
+          );
+          if (transfered) {
+            await this.instance.productService.update(product.id, {
+              availableForAuction: false,
+              sold: true,
+            });
+            break;
+          }
+        } catch (error) {
+          if (error instanceof UserNotHaveAmountException) {
+            usersNotEnoughCreditList.push(userIdSend);
+          }
+
+          console.log(error);
+        }
+      }
+    }
+
+    //check if buyer have credit
+    //transfer credit to owner
+    //not have credit
+    //seach next in search list
+  }
 }

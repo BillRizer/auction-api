@@ -84,6 +84,7 @@ export class ProductService {
         sold: false,
         endsAt: LessThan(getCurrentTimeISO()),
       },
+      relations: ['user'],
     });
   }
 }

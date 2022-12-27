@@ -26,8 +26,7 @@ export class User {
   @Column()
   public name: string;
 
-  @Column()
-  @IsNumber()
+  @Column('decimal', { precision: 11, scale: 2, nullable: false, default: 0 })
   public credit: number;
 
   @CreateDateColumn({ name: 'created_at' })
