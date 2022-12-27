@@ -24,7 +24,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:e2e:watch": "jest --watch --config ./test/jest-e2e.json",
     "test:int": "jest --runInBand --config ./test/jest-int.json",
-    "test:int:watch": "jest --runInBand --watch --config ./test/jest-int.json"
+    "test:int:watch": "jest --runInBand --unhandled-rejections=strict --watch --config ./test/jest-int.json"
   },
   "dependencies": {
     "@nestjs/common": "^9.2.1",
@@ -39,6 +39,7 @@
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "joi": "^17.7.0",
+    "log4js": "^6.7.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -56,6 +57,7 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.13",
     "@types/jest": "28.1.8",
+    "@types/log4js": "^2.3.5",
     "@types/node": "^16.0.0",
     "@types/passport-jwt": "^3.0.7",
     "@types/passport-local": "^1.0.34",

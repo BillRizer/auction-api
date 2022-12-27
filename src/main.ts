@@ -4,9 +4,12 @@ import { EEnvironments, getEnvironment } from './utils/helpers';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import getLogLevels from './logger/geLogLevel';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: getLogLevels(getEnvironment()),
+  });
   const versionApi = 'api/v1';
 
   app.setGlobalPrefix(versionApi);

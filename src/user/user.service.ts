@@ -7,6 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailAlreadyExistException } from '../common/exceptions/email-already-exists.exception';
 import { UserNotHaveAmountException } from './exceptions/user-not-have-amount.exception';
+import { LoggerAdapter } from '../logger/logger';
 
 @Injectable()
 export class UserService {
@@ -39,7 +40,10 @@ export class UserService {
       });
       return await this.userRepository.save(created);
     } catch (error) {
-      //TODO log here
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       return null;
     }
   }
@@ -51,6 +55,10 @@ export class UserService {
     try {
       return await this.userRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       throw new NotFoundException('Could not find this user');
     }
   }
@@ -73,8 +81,10 @@ export class UserService {
       this.userRepository.merge(user, updateUserDto);
       return await this.userRepository.save(user);
     } catch (error) {
-      //TODO: add in log
-      // error. sqlMessage and error.sql
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       if (error.code === 'ER_DUP_ENTRY') {
         throw new NotFoundException('Could not update, this email exists');
       }
@@ -87,7 +97,15 @@ export class UserService {
         { id: userId },
         { credit: () => `credit + ${credit}` },
       );
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `added credit for userid=${userId} credit=${credit}`,
+      );
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       throw new NotFoundException('Could not add credit');
     }
   }
@@ -101,14 +119,30 @@ export class UserService {
         { id: userId },
         { credit: () => `credit - ${credit}` },
       );
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `removed credit for userid=${userId} credit=${credit}`,
+      );
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       throw new NotFoundException('Could not remove credit');
     }
   }
   async updateCredit(userId: string, credit: number) {
     try {
       await this.userRepository.update({ id: userId }, { credit: credit });
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `update credit for userid=${userId} credit=${credit}`,
+      );
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       throw new NotFoundException('Could not update credit');
     }
   }
@@ -135,7 +169,10 @@ export class UserService {
       await this.addCredit(userIdReceive, money);
       return true;
     } catch (error) {
-      console.log(error);
+      LoggerAdapter.logRawMessage(
+        'error',
+        'user.service error=' + JSON.stringify(error),
+      );
       await this.updateCredit(userIdSend, userSend.credit);
       await this.updateCredit(userIdReceive, userReceive.credit);
       console.log('rollback transaction success');

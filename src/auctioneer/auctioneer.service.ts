@@ -4,7 +4,7 @@ import { Product } from '../product/entities/product.entity';
 import { ProductService } from '../product/product.service';
 import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
-import { UserNotHaveAmountException } from 'src/user/exceptions/user-not-have-amount.exception';
+import { UserNotHaveAmountException } from '../user/exceptions/user-not-have-amount.exception';
 
 @Injectable()
 export class Auctioneer {
@@ -12,7 +12,7 @@ export class Auctioneer {
     private productService: ProductService,
     private bidService: BidService,
     private userService: UserService,
-  ) {
+  ) {    
     AuctioneerSingleton.getInstance(productService, bidService, userService);
   }
 }
@@ -60,12 +60,12 @@ export class AuctioneerSingleton {
     const products =
       await this.instance.productService.findAllAvailableForAuctionEnded();
     if (products.length === 0) {
-      console.log('dont have products');
+      // console.log('dont have products');
       return;
     }
 
     for (const product of products) {
-      console.log('>', product.name);
+      // console.log('>', product.name);
       const bids = await this.instance.bidService.findAllByProductId(
         product.id,
       );
@@ -73,7 +73,7 @@ export class AuctioneerSingleton {
         await this.instance.productService.update(product.id, {
           availableForAuction: false,
         });
-        console.log('dont have bids', product.id);
+        // console.log('dont have bids', product.id);
         continue;
       }
 
@@ -84,10 +84,10 @@ export class AuctioneerSingleton {
         const money = bid.value;
 
         if (usersNotEnoughCreditList.includes(userIdSend)) {
-          console.log(
-            'user exist in blacklist (not enough credit)',
-            userIdSend,
-          );
+          // console.log(
+          //   'user exist in blacklist (not enough credit)',
+          //   userIdSend,
+          // );
           continue;
         }
         try {
@@ -108,7 +108,7 @@ export class AuctioneerSingleton {
             usersNotEnoughCreditList.push(userIdSend);
           }
 
-          console.log(error);
+          // console.log(error);
         }
       }
     }

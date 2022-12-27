@@ -10,7 +10,7 @@ import { User } from '../../../user/entities/user.entity';
 import { DatabaseModule } from '../../../database/database.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserService } from '../../../user/user.service';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { UpdateUserDto } from '../../../user/dto/update-user.dto';
 import { envFilePath } from '../../../utils/helpers';
 import { join } from 'path';
 import { getJwtToken } from '../../../auth/test/integration/auth.controller.int-spec';
@@ -70,7 +70,7 @@ describe('UserController (integration)', () => {
             expect(password).toBeUndefined(),
             expect(name).toEqual(createdUserStub.name),
             expect(email).toEqual(createdUserStub.email),
-            expect(credit).toEqual(0);
+            expect(credit).toEqual('0.00');
         })
         .expect(HttpStatus.CREATED);
     });
@@ -120,7 +120,7 @@ describe('UserController (integration)', () => {
             expect(password).toBeUndefined(),
             expect(name).toEqual(createdUserStub.name),
             expect(email).toEqual(createdUserStub.email),
-            expect(credit).toEqual(0),
+            expect(credit).toEqual('0.00'),
             expect(createdAt.length).toBeGreaterThan(1),
             expect(updatedAt.length).toBeGreaterThan(1);
         });

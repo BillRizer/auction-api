@@ -4,7 +4,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { mockUser } from '../utils/mock/user';
 import { CreateUserDto } from './dto/create-user.dto';
-import RequestWithUser from 'src/auth/interface/request-with-user.interface';
+import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { ResponseProfileUser } from './dto/response-profile-user.dto';
 
 const newUserData = {

@@ -1,4 +1,11 @@
-import { Controller, Post, UseGuards, Request, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  HttpCode,
+  Logger,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -8,6 +15,7 @@ import {
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { Public } from './decorator/public.decorator';
+import { LoggerAdapter } from '../logger/logger';
 
 @Controller()
 export class AuthController {
@@ -21,6 +29,10 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   public async login(@Request() req) {
+    LoggerAdapter.logRawMessage(
+      'activities',
+      `authenticated userid=${req.user.id} email=${req.user.email}`,
+    );
     return this.authService.generateJwtAuth(req.user);
   }
 }

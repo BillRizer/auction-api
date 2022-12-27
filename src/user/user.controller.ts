@@ -12,12 +12,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import RequestWithUser from 'src/auth/interface/request-with-user.interface';
+import RequestWithUser from '../auth/interface/request-with-user.interface';
+import { LoggerAdapter } from '../logger/logger';
 import { Public } from '../auth/decorator/public.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseProfileUser } from './dto/response-profile-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { UserNotCreatedException } from './exceptions/user-not-created.exception';
 import { UserService } from './user.service';
 
@@ -39,6 +39,10 @@ export class UserController {
       throw new UserNotCreatedException();
     }
     const { password, deletedAt, ...user } = userCreated;
+    LoggerAdapter.logRawMessage(
+      'activities',
+      `user created  userid=${user.id} email=${user.email} name=${user.name}`,
+    );
     return <ResponseProfileUser>{ ...user };
   }
 
@@ -54,6 +58,10 @@ export class UserController {
       const { password, deletedAt, ...user } = await this.userService.findOne(
         userId,
       );
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `getted user userid=${user.id} email=${user.email} name=${user.name}`,
+      );
       return <ResponseProfileUser>{ ...user };
     } catch (error) {
       throw new HttpException(
@@ -66,7 +74,7 @@ export class UserController {
   @Patch()
   async update(
     @Request() req: RequestWithUser,
-    @Body() updateCompanyDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
     try {
       const userId = req.user.userId;
@@ -75,7 +83,13 @@ export class UserController {
       }
       const { password, deletedAt, ...user } = await this.userService.update(
         userId,
-        { ...updateCompanyDto, email: undefined },
+        { ...updateUserDto, email: undefined },
+      );
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `updatted user userid=${user.id} email=${user.email} name=${
+          user.name
+        } payload=${JSON.stringify(updateUserDto)}`,
       );
       return <ResponseProfileUser>{ ...user };
     } catch (error) {
@@ -91,6 +105,10 @@ export class UserController {
       if (!userId) {
         throw new UnauthorizedException();
       }
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `deleted user userid=${userId}`,
+      );
       await this.userService.deleteById(userId);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

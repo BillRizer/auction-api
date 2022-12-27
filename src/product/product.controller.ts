@@ -24,6 +24,7 @@ import { Public } from '../auth/decorator/public.decorator';
 import { calcLimitAuctionTime } from '../utils/time';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { AvailableForAuctionAlreadySetted } from './exceptions/available-for-auction-already-setted';
+import { LoggerAdapter } from '../logger/logger';
 
 @Controller('product')
 @ApiTags('product')
@@ -56,6 +57,10 @@ export class ProductController {
         throw new ProductNotCreatedException();
       }
       const { deletedAt, user, ...rest } = created;
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `created product - userid=${id} created=${JSON.stringify(created)}`,
+      );
       return <ResponseCreatedProduct>{ ...rest, user_id: created.user.id };
     } catch (error) {
       console.log(error);
@@ -94,7 +99,12 @@ export class ProductController {
       productId,
       updateProduct,
     );
-
+    LoggerAdapter.logRawMessage(
+      'activities',
+      `updated product - userid=${userId} created=${JSON.stringify(
+        updateProduct,
+      )}`,
+    );
     return <ResponseUpdatedProduct>rest;
   }
 
@@ -113,6 +123,10 @@ export class ProductController {
       );
 
       await this.productService.deleteById(productId);
+      LoggerAdapter.logRawMessage(
+        'activities',
+        `deleted product - userid=${userId}`,
+      );
     } catch (error) {
       throw new ProductNotDeletedException();
     }
@@ -137,6 +151,12 @@ export class ProductController {
       endsAt: calcLimitAuctionTime(),
     };
     await this.productService.update(productId, update);
+    LoggerAdapter.logRawMessage(
+      'activities',
+      `set available for auction product - userid=${userId} update=${JSON.stringify(
+        update,
+      )}`,
+    );
   }
 
   @Get('available-for-auction')

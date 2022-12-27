@@ -1,5 +1,5 @@
-import { RequestUpdateProductDto } from 'src/product/dto/request-update-product.dto';
-import { ResponseUpdatedProduct } from 'src/product/dto/response-updated-product.dto';
+import { RequestUpdateProductDto } from '../../../product/dto/request-update-product.dto';
+import { ResponseUpdatedProduct } from '../../../product/dto/response-updated-product.dto';
 import { CreateProductDto } from '../../../product/dto/create-product.dto';
 import { ResponseCreatedProduct } from '../../../product/dto/response-created-product.dto';
 import { Product } from '../../../product/entities/product.entity';

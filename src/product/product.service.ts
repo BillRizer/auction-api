@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getCurrentTimeISO } from 'src/utils/time';
+import { getCurrentTimeISO } from '../utils/time';
 import { LessThan, MoreThan, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductNotFoundException } from './exceptions/product-not-found.exception';
+import { LoggerAdapter } from 'src/logger/logger';
 
 @Injectable()
 export class ProductService {
@@ -22,7 +23,10 @@ export class ProductService {
       });
       return await this.productRepository.save(created);
     } catch (error) {
-      //TODO log here
+      LoggerAdapter.logRawMessage(
+        'error',
+        'product.service error=' + JSON.stringify(error),
+      );
       return null;
     }
   }
@@ -41,6 +45,10 @@ export class ProductService {
     try {
       return await this.productRepository.findOneOrFail({ where: { id: id } });
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'product.service error=' + JSON.stringify(error),
+      );
       throw new ProductNotFoundException();
     }
   }
@@ -50,6 +58,10 @@ export class ProductService {
         where: { id: id, user: { id: userId } },
       });
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'product.service error=' + JSON.stringify(error),
+      );
       throw new ProductNotFoundException();
     }
   }
@@ -62,6 +74,10 @@ export class ProductService {
       this.productRepository.merge(product, requestUpdateProductDto);
       return await this.productRepository.save(product);
     } catch (error) {
+      LoggerAdapter.logRawMessage(
+        'error',
+        'product.service error=' + JSON.stringify(error),
+      );
       throw new NotFoundException('Could not update');
     }
   }
@@ -77,7 +93,7 @@ export class ProductService {
     });
   }
   async findAllAvailableForAuctionEnded() {
-    console.log(getCurrentTimeISO());
+    // console.log(getCurrentTimeISO());
     return await this.productRepository.find({
       where: {
         availableForAuction: true,

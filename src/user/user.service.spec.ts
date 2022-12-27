@@ -130,7 +130,7 @@ describe('UserService', () => {
       jest.spyOn(userRepository, 'save').mockRejectedValueOnce(new Error());
 
       expect(
-        userService.update('fake-uuid', UpdateUserDto),
+        userService.update('fake-uuid', {} as UpdateUserDto),
       ).rejects.toThrowError();
     });
   });

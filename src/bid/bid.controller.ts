@@ -18,6 +18,7 @@ import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { BidLowerException } from './exceptions/bid-lower.execption';
 import { BidTimeoutException } from './exceptions/bid-timeout.execption';
+import { LoggerAdapter } from 'src/logger/logger';
 
 @Controller('bid')
 export class BidController {
@@ -45,6 +46,10 @@ export class BidController {
         throw new BidLowerException(lastBid.value);
       }
     }
+    LoggerAdapter.logRawMessage(
+      'activities',
+      `created bid - userid=${userId} productId=${productId} productName=${product.name} value=${createBidDto.value}`,
+    );
     await this.bidService.create(userId, productId, createBidDto);
   }
 

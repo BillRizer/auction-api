@@ -21,7 +21,7 @@ import {
   requestUpdateProductStub,
 } from '../stubs/product.stub';
 import { getUserInfo } from '../../../user/test/integration/user.controller.int-spec';
-import { RequestUpdateProductDto } from 'src/product/dto/request-update-product.dto';
+import { RequestUpdateProductDto } from '../../../product/dto/request-update-product.dto';
 
 describe('ProductController (integration)', () => {
   let app: INestApplication;

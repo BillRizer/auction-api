@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { BidModule } from './bid/bid.module';
 import { AuctioneerModule } from './auctioneer/auctioneer.module';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -29,4 +30,8 @@ import { AuctioneerModule } from './auctioneer/auctioneer.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
