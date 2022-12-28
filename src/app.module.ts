@@ -10,6 +10,7 @@ import { ProductModule } from './product/product.module';
 import { BidModule } from './bid/bid.module';
 import { AuctioneerModule } from './auctioneer/auctioneer.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { SaleModule } from './sale/sale.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
     ProductModule,
     BidModule,
     AuctioneerModule,
+    SaleModule,
   ],
   providers: [
     {
