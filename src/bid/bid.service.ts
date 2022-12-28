@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LoggerAdapter } from 'src/logger/logger';
+import { LoggerAdapter } from '../logger/logger';
 import { Repository } from 'typeorm';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { Bid } from './entities/bid.entity';

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigModule } from '@nestjs/config';
-import { AppModule } from '../../../app.module';
+import { AppModule } from '../../../../test/app.module.stub';
 import { CreateUserDto } from '../../../user/dto/create-user.dto';
 import { userStub } from '../stubs/user.stub';
 import { Repository } from 'typeorm';
@@ -32,7 +32,6 @@ describe('UserController (integration)', () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
-        DatabaseModule,
         ConfigModule.forRoot({
           envFilePath: [
             join(envFilePath, '.env'),

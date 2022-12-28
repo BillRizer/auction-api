@@ -7,7 +7,7 @@ import { RequestUpdateProductDto } from './dto/request-update-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductNotFoundException } from './exceptions/product-not-found.exception';
-import { LoggerAdapter } from 'src/logger/logger';
+import { LoggerAdapter } from '../logger/logger';
 
 @Injectable()
 export class ProductService {

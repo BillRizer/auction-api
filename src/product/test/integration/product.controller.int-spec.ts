@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigModule } from '@nestjs/config';
-import { AppModule } from '../../../app.module';
+import { AppModule } from '../../../../test/app.module.stub';
 import { Repository } from 'typeorm';
-import { DatabaseModule } from '../../../database/database.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { envFilePath } from '../../../utils/helpers';
 import { join } from 'path';
@@ -17,8 +16,6 @@ import { userStub } from '../../../user/test/stubs/user.stub';
 import {
   createProductStub,
   responseCreatedProduct,
-  productEntityStub,
-  requestUpdateProductStub,
 } from '../stubs/product.stub';
 import { getUserInfo } from '../../../user/test/integration/user.controller.int-spec';
 import { RequestUpdateProductDto } from '../../../product/dto/request-update-product.dto';
@@ -43,7 +40,7 @@ describe('ProductController (integration)', () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
-        DatabaseModule,
+       
         ConfigModule.forRoot({
           envFilePath: [
             join(envFilePath, '.env'),
@@ -264,7 +261,7 @@ describe('ProductController (integration)', () => {
     });
     it('should throw error when product not found', async () => {
       await request(httpServer)
-        .delete(`/product/any-uuid-product-id`)
+        .delete(`/product/1bc05352-9276-4e20-9b9e-15b764a55b0b`)
         .set('Accept', 'application/json')
         .set({
           Authorization: `Bearer ${jwtToken}`,

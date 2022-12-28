@@ -18,7 +18,7 @@ import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/create-bid.dto';
 import { BidLowerException } from './exceptions/bid-lower.execption';
 import { BidTimeoutException } from './exceptions/bid-timeout.execption';
-import { LoggerAdapter } from 'src/logger/logger';
+import { LoggerAdapter } from '../logger/logger';
 
 @Controller('bid')
 export class BidController {

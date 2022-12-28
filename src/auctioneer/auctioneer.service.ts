@@ -12,7 +12,7 @@ export class Auctioneer {
     private productService: ProductService,
     private bidService: BidService,
     private userService: UserService,
-  ) {    
+  ) {
     AuctioneerSingleton.getInstance(productService, bidService, userService);
   }
 }
@@ -60,7 +60,7 @@ export class AuctioneerSingleton {
     const products =
       await this.instance.productService.findAllAvailableForAuctionEnded();
     if (products.length === 0) {
-      // console.log('dont have products');
+      console.log('dont have products');
       return;
     }
 
