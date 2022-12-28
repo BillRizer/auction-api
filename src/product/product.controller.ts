@@ -14,7 +14,11 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { RequestCreateProductDto } from './dto/request-create-product';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ProductNotCreatedException } from './exceptions/product-not-created.exception';
 import { ResponseCreatedProduct } from './dto/response-created-product.dto';
 import { RequestUpdateProductDto } from './dto/request-update-product.dto';
@@ -28,6 +32,8 @@ import { LoggerAdapter } from '../logger/logger';
 
 @Controller('product')
 @ApiTags('product')
+@ApiUnauthorizedResponse()
+@ApiBadRequestResponse()
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

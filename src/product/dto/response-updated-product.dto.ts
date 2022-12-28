@@ -1,4 +1,9 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class ResponseUpdatedProduct {
+  @ApiProperty({
+    description: 'id',
+  })
   id: string;
   name: string;
   description: string;

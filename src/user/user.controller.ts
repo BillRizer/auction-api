@@ -11,7 +11,13 @@ import {
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadGatewayResponse,
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import RequestWithUser from '../auth/interface/request-with-user.interface';
 import { LoggerAdapter } from '../logger/logger';
 import { Public } from '../auth/decorator/public.decorator';
@@ -23,6 +29,8 @@ import { UserService } from './user.service';
 
 @Controller('user')
 @ApiTags('user')
+@ApiUnauthorizedResponse()
+@ApiBadRequestResponse()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

@@ -5,6 +5,7 @@ import { ProductService } from '../product/product.service';
 import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
 import { UserNotHaveAmountException } from '../user/exceptions/user-not-have-amount.exception';
+import { LoggerAdapter } from '../logger/logger';
 
 @Injectable()
 export class Auctioneer {
@@ -60,12 +61,18 @@ export class AuctioneerSingleton {
     const products =
       await this.instance.productService.findAllAvailableForAuctionEnded();
     if (products.length === 0) {
-      console.log('dont have products');
+      LoggerAdapter.logRawMessage(
+        'debug',
+        `AuctionnerService - Don't have products ended`,
+      );
       return;
     }
 
     for (const product of products) {
-      // console.log('>', product.name);
+      LoggerAdapter.logRawMessage(
+        'debug',
+        `AuctionnerService -  processing product ${product.name}`,
+      );
       const bids = await this.instance.bidService.findAllByProductId(
         product.id,
       );
@@ -73,7 +80,10 @@ export class AuctioneerSingleton {
         await this.instance.productService.update(product.id, {
           availableForAuction: false,
         });
-        // console.log('dont have bids', product.id);
+        LoggerAdapter.logRawMessage(
+          'log',
+          `AuctionnerService - don't have bids productId=${product.id}`,
+        );
         continue;
       }
 
@@ -84,10 +94,10 @@ export class AuctioneerSingleton {
         const money = bid.value;
 
         if (usersNotEnoughCreditList.includes(userIdSend)) {
-          // console.log(
-          //   'user exist in blacklist (not enough credit)',
-          //   userIdSend,
-          // );
+          LoggerAdapter.logRawMessage(
+            'debug',
+            `AuctionnerService - user exist in blacklist (not enough credit) userId=${userIdSend}`,
+          );
           continue;
         }
         try {
@@ -101,13 +111,20 @@ export class AuctioneerSingleton {
               availableForAuction: false,
               sold: true,
             });
+            LoggerAdapter.logRawMessage(
+              'log',
+              `AuctionnerService - product ${product.name}[${product.id}] sold from ${userIdReceive} to ${userIdSend}`,
+            );
             break;
           }
         } catch (error) {
           if (error instanceof UserNotHaveAmountException) {
             usersNotEnoughCreditList.push(userIdSend);
           }
-
+          LoggerAdapter.logRawMessage(
+            'error',
+            `AuctionnerService - ${JSON.stringify(error)}`,
+          );
           // console.log(error);
         }
       }

@@ -1,12 +1,25 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 export class RequestCreateProductDto {
+  @ApiProperty({
+    description: 'product name',
+    example: 'my rare product',
+  })
   @IsString()
-  public name: string;
+  name: string;
 
+  @ApiProperty({
+    description: 'product description',
+    example: 'rare product, manufactured by HinHow of ming dinasty',
+  })
   @IsString()
-  public description: string;
+  description: string;
 
+  @ApiProperty({
+    description: 'product category',
+    example: 'rare',
+  })
   @IsString()
-  public category: string;
+  category: string;
 }

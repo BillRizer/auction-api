@@ -19,7 +19,9 @@ import { CreateBidDto } from './dto/create-bid.dto';
 import { BidLowerException } from './exceptions/bid-lower.execption';
 import { BidTimeoutException } from './exceptions/bid-timeout.execption';
 import { LoggerAdapter } from '../logger/logger';
-
+import { ApiTags } from '@nestjs/swagger';
+import { ResponseBidDto } from './dto/response-bid';
+@ApiTags('Bid')
 @Controller('bid')
 export class BidController {
   constructor(
@@ -55,6 +57,7 @@ export class BidController {
 
   @Get(':id')
   async findAllByProductId(@Param('id', ParseUUIDPipe) productId: string) {
-    return await this.bidService.findAllByProductId(productId);
+    const bids = await this.bidService.findAllByProductId(productId);
+    return <Array<ResponseBidDto>>bids;
   }
 }
