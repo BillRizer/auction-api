@@ -43,7 +43,10 @@ export function getCurrentTimeISO(): string {
 //calc how long will the auction be available
 export function calcLimitAuctionTime(): string {
   const now = getCurrentDateTimeUTCWithoutSec();
-  return CalculateDate(new Date(now), '+5min').toISOString();
+  return CalculateDate(
+    new Date(now),
+    '+' + process.env.LIMIT_AUCTION_TIME,
+  ).toISOString();
 }
 
 // because I don't want the seconds
