@@ -40,7 +40,7 @@ describe('ProductController (integration)', () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
-       
+
         ConfigModule.forRoot({
           envFilePath: [
             join(envFilePath, '.env'),
@@ -189,8 +189,6 @@ describe('ProductController (integration)', () => {
         name: 'changed-name',
         category: 'miscelaneous',
         description: 'my neww description',
-        availableForAuction: true,
-        sold: true,
       };
       await request(httpServer)
         .patch(`/product/${productCreated.id}`)
@@ -203,11 +201,9 @@ describe('ProductController (integration)', () => {
           const { availableForAuction, category, description, name, sold } =
             response.body;
 
-          expect(availableForAuction).toEqual(update.availableForAuction);
           expect(category).toEqual(update.category);
           expect(description).toEqual(update.description);
           expect(name).toEqual(update.name);
-          expect(sold).toEqual(update.sold);
         })
         .expect(HttpStatus.OK);
     });
@@ -219,7 +215,6 @@ describe('ProductController (integration)', () => {
 
       const update: RequestUpdateProductDto = {
         name: 'changed-name',
-        availableForAuction: true,
       };
       await request(httpServer)
         .patch(`/product/${productCreated.id}`)
@@ -232,7 +227,6 @@ describe('ProductController (integration)', () => {
           const { availableForAuction, category, description, name, sold } =
             response.body;
 
-          expect(availableForAuction).toEqual(update.availableForAuction);
           expect(category).toEqual(productCreated.category);
           expect(description).toEqual(productCreated.description);
           expect(name).toEqual(update.name);

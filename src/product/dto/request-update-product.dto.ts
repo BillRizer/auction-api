@@ -3,13 +3,6 @@ import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { CreateProductDto } from './create-product.dto';
 
 export class RequestUpdateProductDto {
-  @IsBoolean()
-  @IsOptional()
-  public availableForAuction?: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  public sold?: boolean;
 
   @IsString()
   @IsOptional()

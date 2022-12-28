@@ -90,10 +90,8 @@ export class ProductController {
     );
     const updateProduct: RequestUpdateProductDto = {
       category: requestUpdateProductDto.category,
-      availableForAuction: requestUpdateProductDto.availableForAuction,
       description: requestUpdateProductDto.description,
       name: requestUpdateProductDto.name,
-      sold: requestUpdateProductDto.sold,
     };
     const { user, deletedAt, ...rest } = await this.productService.update(
       productId,

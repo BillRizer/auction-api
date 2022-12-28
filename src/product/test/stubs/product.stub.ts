@@ -54,11 +54,9 @@ export const createProductStub: CreateProductDto = {
   user: { id: productEntityStub.id },
 };
 export const requestUpdateProductStub: RequestUpdateProductDto = {
-  availableForAuction: product.availableForAuction,
   category: product.category,
   description: product.description,
   name: product.name,
-  sold: product.sold,
 };
 export const productListEntitiesStub: Array<Product> = [
   { ...productEntityStub, id: '000-0000-1', name: 'first' },
