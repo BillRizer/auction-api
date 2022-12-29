@@ -4,7 +4,7 @@ API para leilão de produtos raros
 
 ![image](https://user-images.githubusercontent.com/5104527/209767168-651184c8-8639-4db8-bfac-f0a64921cb56.png)
 ![image](https://user-images.githubusercontent.com/5104527/209913368-630369e2-85ee-4a51-af77-98c4fe2c5664.png)
-**obsservations:**
+**Note:**
 - A tabela **Bid** e **Sale** não possui as FKs de **User** e **Product** para simplificar o teste.
 Para que um **Bid** seja criado, é verificado se o **User** e **Product** existe, para o **Sale** também, por isso não quebraria a lógica aplicada por um relacionamento na database, e conforme efetuado apenas "SoftDelete" não ficariam registros órfãos.
 - o campo **Role** não foi implementado.
