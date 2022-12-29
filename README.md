@@ -15,35 +15,48 @@ Para que um **Bid** seja criado, é verificado se o **User** e **Product** exist
 
 # Modules:
 
-### Auth:
+**Auth**:
+
 *overview*
 > módulo para autenticação JWT e login
 
 *tech*
 > Apenas um módulo comum do NestJs
 
-### User
+<br/>
+
+**User**
+
 *overview*
 > módulo para CRUD de usuarios
 
 *tech*
 > Apenas um módulo comum do NestJs
 
-### product
+<br/>
+
+**product**
+
 *overview*
 > módulo para CRUD de produtos e de um usuario
 
 *tech*
 > Apenas um módulo comum do NestJs
 
-### bid
+<br/>
+
+**bid**
+
 *overview*
 >  módulo para Criar e listar lances relativos a um produto
 
 *tech*
 > Apenas um módulo comum do NestJs
 
-### auctioneer
+<br/>
+
+**auctioneer**
+
 *overview*
 
 > modulo que verifica leiloes finalizados e define o vencedor.
@@ -52,8 +65,13 @@ Para que um **Bid** seja criado, é verificado se o **User** e **Product** exist
 *tech*
 
 > Este modulo possui características diferentes de um módulo normal do NestJs, pois ele entra em loop para verificar os leiloes que estão acontecendo.
-Decidi utilizar o padrão criacional "Singleton", embora viole o princípio de responsabilidade única, permite que mantenha apenas uma instância da classe em todo código, mesmo que chame este modulo em outro lugar, sera mantida a instância, isto previne que o modulo Auctioneer seja criado em outros lugares e assim gerando problemas de concorrência, uma vez que este modulo trabalha em loop
+Decidi utilizar o padrão criacional "Singleton", embora viole o princípio de responsabilidade única, permite que mantenha apenas uma instância da classe em todo código, mesmo que chame este modulo em outro lugar, sera mantida a instância, isto previne que o modulo Auctioneer seja criado em outros lugares e assim gerando problemas de concorrência, uma vez que este modulo trabalha em loop.
 
+**Note:**
+ Uma solução mais rápida e com suporte do framework seria criar uma ["Task Schedule"](https://docs.nestjs.com/techniques/task-scheduling) + Redis. A cada produto que for definido como "disponível para leilão" ele agenda a execução do processo que verifica o vencedor. Fiz da forma menos automatizada para demostrar minha capacidade de solucionar problemas.
+
+----
+<br>
 
 # tests
 ![image](https://user-images.githubusercontent.com/5104527/209913003-3c85e372-3ee8-4ac1-88ae-111d26c6dc99.png)
@@ -80,8 +98,11 @@ http://localhost:3000/api/v1
 
 
 # TODO
-    [] apos o usuário vencer um leilao deve receber um email
-    [] testar performance 
+    [] Apos o usuário vencer um leilao deve receber um email
+    [] Testar performance 
+    [] Melhorar deploy
+    [] Refatorar mult-stage building
+    [] Criar automaticamente a database auction_e2e para Dev
 
 # Stack
 
@@ -116,5 +137,12 @@ yarn test:watch
 
 **production:**
 ```
+#Como utilizo multi-stage-building, é necessario executar o deploy em dev e quando os containers iniciarem, cancelar a execucao, como exemplo abaixo:
+
+./deploy --dev
+
+#Quando iniciar a api, pressione CTRl+C para encerrar a execucão dos containers
+
 ./deploy --prod
+#A base url é http://localhost:3000/api/v1
 ```
