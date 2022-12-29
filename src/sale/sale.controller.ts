@@ -1,22 +1,18 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { SaleService } from './sale.service';
-import { CreateSaleDto } from './dto/create-sale.dto';
-import { UpdateSaleDto } from './dto/update-sale.dto';
+import { Controller, Get } from '@nestjs/common';
 
+import { SaleService } from './sale.service';
+
+import { ApiTags } from '@nestjs/swagger';
+import { ResponseSaleDto } from './dto/response-sale';
+
+@ApiTags('Sale')
 @Controller('sale')
 export class SaleController {
   constructor(private readonly saleService: SaleService) {}
 
   @Get()
-  findAll() {
-    return this.saleService.findAll();
+  async findAll() {
+    const sales = await this.saleService.findAll();
+    return <Array<ResponseSaleDto>>sales;
   }
 }
