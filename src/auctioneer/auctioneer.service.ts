@@ -6,6 +6,8 @@ import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
 import { UserNotHaveAmountException } from '../user/exceptions/user-not-have-amount.exception';
 import { LoggerAdapter } from '../logger/logger';
+import { SaleService } from '../sale/sale.service';
+import { Bid } from '../bid/entities/bid.entity';
 
 @Injectable()
 export class Auctioneer {
@@ -13,53 +15,76 @@ export class Auctioneer {
     private productService: ProductService,
     private bidService: BidService,
     private userService: UserService,
+    private saleService: SaleService,
   ) {
-    AuctioneerSingleton.getInstance(productService, bidService, userService);
+    AuctioneerSingleton.getInstance(
+      productService,
+      bidService,
+      userService,
+      saleService,
+    );
+    // console.log('auctioneer initialized');
+  }
+  onModuleDestroy() {
+    AuctioneerSingleton.destroy();
   }
 }
 
 export class AuctioneerSingleton {
   private static instance: AuctioneerSingleton;
-  private productService: ProductService;
-  private bidService: BidService;
-  private userService: UserService;
+  private static productService: ProductService;
+  private static bidService: BidService;
+  private static userService: UserService;
+  private static saleService: SaleService;
+  private static loop;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor(
     productService: ProductService,
     bidService: BidService,
     userService: UserService,
+    saleService: SaleService,
   ) {
-    this.productService = productService;
-    this.bidService = bidService;
-    this.userService = userService;
+    AuctioneerSingleton.productService = productService;
+    AuctioneerSingleton.bidService = bidService;
+    AuctioneerSingleton.userService = userService;
+    AuctioneerSingleton.saleService = saleService;
   }
 
   public static getInstance(
     productService,
     bidService,
     userService,
+    saleService,
   ): AuctioneerSingleton {
     if (!AuctioneerSingleton.instance) {
       AuctioneerSingleton.instance = new AuctioneerSingleton(
         productService,
         bidService,
         userService,
+        saleService,
       );
       AuctioneerSingleton.startLoop();
     }
 
     return AuctioneerSingleton.instance;
   }
-
+  public static destroy(): void {
+    if (AuctioneerSingleton.loop) {
+      clearInterval(AuctioneerSingleton.loop);
+      AuctioneerSingleton.loop = null;
+      // console.log('auctioneer destroyed', AuctioneerSingleton.loop);
+    }
+  }
   private static startLoop() {
-    setInterval(() => {
+    AuctioneerSingleton.loop = setInterval(() => {
       AuctioneerSingleton.main();
     }, +process.env.AUCTIONEER_FREQUENCY_INTERVAL_MS || 3000);
   }
   private static async main() {
+    console.log('processing auctioneer');
+
     const products =
-      await this.instance.productService.findAllAvailableForAuctionEnded();
+      await this.productService.findAllAvailableForAuctionEnded();
     if (products.length === 0) {
       LoggerAdapter.logRawMessage(
         'debug',
@@ -67,17 +92,18 @@ export class AuctioneerSingleton {
       );
       return;
     }
+    this.checkProducts(products);
+  }
 
+  private static async checkProducts(products: Array<Product>) {
     for (const product of products) {
       LoggerAdapter.logRawMessage(
         'debug',
         `AuctionnerService -  processing product ${product.name}`,
       );
-      const bids = await this.instance.bidService.findAllByProductId(
-        product.id,
-      );
+      const bids = await this.bidService.findAllByProductId(product.id);
       if (bids.length == 0) {
-        await this.instance.productService.update(product.id, {
+        await this.productService.update(product.id, {
           availableForAuction: false,
         });
         LoggerAdapter.logRawMessage(
@@ -86,53 +112,52 @@ export class AuctioneerSingleton {
         );
         continue;
       }
+      await this.checkBids(bids, product);
+    }
+  }
+  private static async checkBids(bids: Array<Bid>, product: Product) {
+    for (const bid of bids) {
+      const userIdSend = bid.userId;
+      const userIdReceive = product.user.id;
+      const money = bid.value;
 
-      const usersNotEnoughCreditList = [];
-      for (const bid of bids) {
-        const userIdSend = bid.userId;
-        const userIdReceive = product.user.id;
-        const money = bid.value;
-
-        if (usersNotEnoughCreditList.includes(userIdSend)) {
+      try {
+        const transfered = await this.userService.transactionCredit(
+          userIdSend,
+          userIdReceive,
+          money,
+        );
+        if (transfered) {
+          await this.productService.update(product.id, {
+            availableForAuction: false,
+            sold: true,
+          });
+          await this.saleService.create(userIdSend, product.id, {
+            value: money,
+          });
           LoggerAdapter.logRawMessage(
-            'debug',
-            `AuctionnerService - user exist in blacklist (not enough credit) userId=${userIdSend}`,
+            'log',
+            `AuctionnerService - product ${product.name}[${product.id}] sold from ${userIdReceive} to ${userIdSend}`,
           );
-          continue;
+          return;
         }
-        try {
-          const transfered = await this.instance.userService.transactionCredit(
-            userIdSend,
-            userIdReceive,
-            money,
-          );
-          if (transfered) {
-            await this.instance.productService.update(product.id, {
-              availableForAuction: false,
-              sold: true,
-            });
-            LoggerAdapter.logRawMessage(
-              'log',
-              `AuctionnerService - product ${product.name}[${product.id}] sold from ${userIdReceive} to ${userIdSend}`,
-            );
-            break;
-          }
-        } catch (error) {
-          if (error instanceof UserNotHaveAmountException) {
-            usersNotEnoughCreditList.push(userIdSend);
-          }
-          LoggerAdapter.logRawMessage(
-            'error',
-            `AuctionnerService - ${JSON.stringify(error)}`,
-          );
-          // console.log(error);
-        }
+      } catch (error) {
+        LoggerAdapter.logRawMessage(
+          'log',
+          `AuctionnerService - ${JSON.stringify(error)}`,
+        );
       }
     }
-
-    //check if buyer have credit
-    //transfer credit to owner
-    //not have credit
-    //seach next in search list
+    this.rejectAuctionForProduct(product.id);
+    LoggerAdapter.logRawMessage(
+      'log',
+      `AuctionnerService - finished because not have a winner productId=${product.id} productName=${product.name}`,
+    );
+  }
+  private static async rejectAuctionForProduct(productId: string) {
+    await this.productService.update(productId, {
+      availableForAuction: false,
+      sold: false,
+    });
   }
 }
