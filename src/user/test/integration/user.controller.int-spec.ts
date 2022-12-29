@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigModule } from '@nestjs/config';
-import { AppModule } from '../../../../test/app.module.stub';
+import { AppModule } from '../../../app.module';
 import { CreateUserDto } from '../../../user/dto/create-user.dto';
 import { userStub } from '../stubs/user.stub';
 import { Repository } from 'typeorm';
@@ -49,6 +49,9 @@ describe('UserController (integration)', () => {
 
     //clean table user
     await cleanUserTable(userRepository);
+  });
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/user [POST] (integration)', () => {

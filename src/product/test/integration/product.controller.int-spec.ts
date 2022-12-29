@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigModule } from '@nestjs/config';
-import { AppModule } from '../../../../test/app.module.stub';
+import { AppModule } from '../../../app.module';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { envFilePath } from '../../../utils/helpers';
@@ -69,6 +69,10 @@ describe('ProductController (integration)', () => {
     );
     currentUser = await getUserInfo(httpServer, jwtToken);
   });
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('should be defined', () => {
     expect(productRepository).toBeDefined();
     expect(productService).toBeDefined();

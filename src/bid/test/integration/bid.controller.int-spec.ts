@@ -88,6 +88,9 @@ describe('BidController (integration)', () => {
       user: { id: userInfoA.id },
     });
   });
+  afterAll(async () => {
+    await app.close();
+  });
 
   it('should have jwt tokens', () => {
     expect(jwtTokenA).toBeDefined();

@@ -112,7 +112,7 @@ export class UserService {
   async removeCredit(userId: string, credit: number) {
     try {
       const user = await this.findOneOrFail(userId);
-      if (user.credit < credit) {
+      if (+user.credit < +credit) {
         throw new UserNotHaveAmountException(credit);
       }
       await this.userRepository.update(
@@ -160,7 +160,7 @@ export class UserService {
     const userSend = await this.findOneOrFail(userIdSend);
     const userReceive = await this.findOneOrFail(userIdReceive);
 
-    if (userSend.credit < money) {
+    if (+userSend.credit < +money) {
       throw new UserNotHaveAmountException(money);
     }
 

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigModule } from '@nestjs/config';
-import { AppModule } from '../../../../test/app.module.stub';
+import { AppModule } from '../../../app.module';
 import { CreateUserDto } from '../../../user/dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { User } from '../../../user/entities/user.entity';
@@ -51,7 +51,7 @@ describe('AuthController (integration)', () => {
 
   afterAll(async () => {
     await cleanUserTable(userRepository);
-    app.close();
+    await app.close();
   });
 
   describe('/auth/login [POST] (integration)', () => {
