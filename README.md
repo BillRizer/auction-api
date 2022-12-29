@@ -71,8 +71,12 @@ http://localhost:3000/api/v1
 ```
 ./deploy --dev
 ```
+*before tests, create database auction_e2e for integrations tests*
 **tests:**
 ```
+#e2e test
+yarn test:e2e:watch
+
 #integrations test
 yarn test:int:watch
 
