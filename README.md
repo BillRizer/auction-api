@@ -14,16 +14,46 @@ Para que um **Bid** seja criado, é verificado se o **User** e **Product** exist
 **AUCTIONEER_FREQUENCY_INTERVAL_MS** = frequencia que o modulo que verifica o vencedor atua.
 
 # Modules:
-**auth**: autenticação JWT e login
 
-**user**: crud para usuarios
+### Auth:
+*overview*
+> módulo para autenticação JWT e login
 
-**product**: crud para gerenciar produtos de um usuario
+*tech*
+> Apenas um módulo comum do NestJs
 
-**bid**: cria e lista lances relativos a um produto
+### User
+*overview*
+> módulo para CRUD de usuarios
 
-**auctioneer**: modulo que verifica leiloes finalizados e define o vencedor.
-    Ao acabar o tempo o modulo "Auctioneer" verifica o ganhador com o maior lance no tempo limite, que tenha crédito suficiente, caso contrario o próximo da lista sera o ganhador, caso nenhum possua crédito ou o produto não tenha lances, será retornado ao estado de um produto não vendido. 
+*tech*
+> Apenas um módulo comum do NestJs
+
+### product
+*overview*
+> módulo para CRUD de produtos e de um usuario
+
+*tech*
+> Apenas um módulo comum do NestJs
+
+### bid
+*overview*
+>  módulo para Criar e listar lances relativos a um produto
+
+*tech*
+> Apenas um módulo comum do NestJs
+
+### auctioneer
+*overview*
+
+> modulo que verifica leiloes finalizados e define o vencedor.
+> Ao acabar o tempo o modulo "Auctioneer" verifica o ganhador com o maior lance no tempo limite, que tenha crédito suficiente, caso contrario o próximo da lista sera o ganhador, caso nenhum possua crédito ou o produto não tenha lances, será retornado ao estado de um produto não vendido. 
+
+*tech*
+
+> Este modulo possui características diferentes de um módulo normal do NestJs, pois ele entra em loop para verificar os leiloes que estão acontecendo.
+Decidi utilizar o padrão criacional "Singleton", embora viole o princípio de responsabilidade única, permite que mantenha apenas uma instância da classe em todo código, mesmo que chame este modulo em outro lugar, sera mantida a instância, isto previne que o modulo Auctioneer seja criado em outros lugares e assim gerando problemas de concorrência, uma vez que este modulo trabalha em loop
+
 
 # tests
 ![image](https://user-images.githubusercontent.com/5104527/209913003-3c85e372-3ee8-4ac1-88ae-111d26c6dc99.png)
