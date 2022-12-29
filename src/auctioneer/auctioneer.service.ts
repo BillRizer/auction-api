@@ -112,6 +112,11 @@ export class AuctioneerSingleton {
         );
         continue;
       }
+      // product with owner with account deleted
+      if (product.user == null || product.user.id == undefined) {
+        this.rejectAuctionForProduct(product.id);
+        continue;
+      }
       await this.checkBids(bids, product);
     }
   }
